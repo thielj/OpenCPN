@@ -326,9 +326,10 @@ IF(QT_ANDROID)
     SET(OPENGL_FOUND "YES")
 
     SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-    add_subdirectory(src/glshim)
 
-    add_subdirectory(src/glu)
+#    add_subdirectory(src/glshim)
+#    add_subdirectory(src/glu)
+    SET(EXTRA_LIBS ${EXTRA_LIBS} GL GLU )
 
 ENDIF(QT_ANDROID)
 
@@ -500,6 +501,12 @@ IF(QT_ANDROID)
 
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 
+  # Plugins must be linked to the wrapper lib; we use UNKNOWN here to pass this on "as-is"
+  add_library(opencpn_wrapper UNKNOWN IMPORTED)
+  # assume it's it created in the build directory
+  set_target_properties(opencpn_wrapper PROPERTIES IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/libopencpn.so")
+
+
 ENDIF(QT_ANDROID)
 
 
@@ -522,7 +529,9 @@ ENDIF(UNIX AND NOT QT_ANDROID)
 
 ENDIF (NOT WIN32 AND NOT APPLE)
 
+IF(NOT QT_ANDROID)
 FIND_PACKAGE(Gettext REQUIRED)
+ENDIF(NOT QT_ANDROID)
 
 IF(UNIX)
   IF(NOT QT_ANDROID) # this should be detected by the grib plugin
@@ -1341,7 +1350,7 @@ ADD_LIBRARY(gorp ${HDRS} ${SRCS}
         ${SRC_SYMBOLS}
         )
         
-TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
+TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} GL GLU )
       
 ENDIF()
 

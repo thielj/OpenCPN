@@ -130,8 +130,7 @@ IF (QT_ANDROID )
         # Presently, Android Plugins are built in the core tree, so the variables {wxQT_BASE}, etc.
         # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
 
-        # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
+	opencpn_wrapper
 
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
@@ -155,5 +154,6 @@ ENDIF(QT_ANDROID)
 
 SET(BUILD_SHARED_LIBS TRUE)
 
+IF(NOT QT_ANDROID)
 FIND_PACKAGE(Gettext REQUIRED)
-
+ENDIF(NOT QT_ANDROID)
