@@ -56,6 +56,8 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
+#endif
+#ifdef __MSVC__
 #include <new.h>
 #endif
 
@@ -346,7 +348,7 @@ void OCPNPlatform::Initialize_1( void )
     
     
     // URL for sending error reports over HTTP.
-    if(g_bEmailCrashReport){
+    if(1/*g_bEmailCrashReport*/){
         info.pszEmailTo = _T("opencpn@bigdumboat.com");
         info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
         info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
@@ -430,7 +432,7 @@ void OCPNPlatform::Initialize_1( void )
 #endif
 #endif
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
     //  Invoke my own handler for failures of malloc/new
     _set_new_handler( MyNewHandler );
     //  configure malloc to call the New failure handler on failure
@@ -470,7 +472,7 @@ void OCPNPlatform::Initialize_1( void )
 #endif
 #endif
             
-#ifdef __WXMSW__
+#ifdef __MSVC__
             
             //    Handle any Floating Point Exceptions which may leak thru from other
             //    processes.  The exception filter is in cutil.c
@@ -572,7 +574,53 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     
-    
+
+#ifdef __WXMSW__
+    //  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/chartdldr_pi.dll" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+
+        pConfig->SetPath( _T ( "/PlugIns/wmm_pi.dll" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
+    }
+#endif
+
+#ifdef __WXOSX__
+//  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.dylib" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.dylib" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
+    }
+#endif
+
+#ifdef __LINUX__
+//  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
+    }
+#endif
+
+        
 #ifdef __OCPN__ANDROID__
     
 #ifdef ocpnUSE_GL
@@ -580,9 +628,6 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_GLOptions.m_bTextureCompression = 1;
     g_GLOptions.m_bTextureCompressionCaching = 1;
 #endif
-    
-    //[PlugIns/libchartdldr_pi.so]
-    //bEnabled=1
     
     g_btouch = true;
     g_bresponsive = true;
@@ -999,7 +1044,8 @@ bool OCPNPlatform::InitializeLogFile( void )
     
 #ifdef  __WXOSX__
     
-    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences"
+    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences/opencpn"
+    LibPref.RemoveLastDir();// takes off "opencpn"
     LibPref.RemoveLastDir();// takes off "Preferences"
     
     mlog_file = LibPref.GetFullPath();
@@ -1420,6 +1466,21 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         
     
 #else
+    if(g_bresponsive ){
+        
+        double premult = 1.0;
+        
+        //Adjust the scale factor using the global GUI scale parameter
+        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        
+        
+        rv = premult * postmult;
+        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        rv = wxMax(rv, 1.0);
+        
+    }
+    
+
 #endif
 
     return rv;
@@ -1461,6 +1522,7 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
         rv *= postmult;
         rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        rv = wxMax(rv, 1.0);
     }
     
 #endif

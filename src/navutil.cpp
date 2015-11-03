@@ -345,7 +345,7 @@ extern bool             g_btouch;
 extern bool             g_bresponsive;
 
 extern bool             bGPSValid;              // for track recording
-extern bool             g_bexpert;
+extern bool             g_bGLexpert;
 
 extern int              g_SENC_LOD_pixels;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
@@ -1289,7 +1289,7 @@ int MyConfig::LoadMyConfig()
 
     /* opengl options */
 #ifdef ocpnUSE_GL
-    Read( _T ( "OpenGLExpert" ), &g_bexpert, false );
+    Read( _T ( "OpenGLExpert" ), &g_bGLexpert, false );
     Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
 
     Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
@@ -1297,7 +1297,7 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
     Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 128 );
-    if(!g_bexpert){
+    if(!g_bGLexpert){
         g_GLOptions.m_iTextureMemorySize = wxMax(128, g_GLOptions.m_iTextureMemorySize);
         g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
     }
@@ -2916,8 +2916,10 @@ void MyConfig::UpdateNavObj( void )
 
     delete pNavObjectSet;
 
-    if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+    if( ::wxFileExists( m_sNavObjSetChangesFile ) ){
+        wxLogNull logNo;                // avoid silly log error message.
         wxRemoveFile( m_sNavObjSetChangesFile );
+    }
 
     //delete m_pNavObjectChangesSet;
     //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
@@ -4647,8 +4649,10 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
 
         //  Sometimes, on Windows, the destination image is corrupt...
         if(NULL == box)
+        {
+            free(d);
             return;
-
+        }
         float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
         for( int i = 0; i < sb; i++ ) {

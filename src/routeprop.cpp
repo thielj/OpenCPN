@@ -2139,7 +2139,7 @@ bool RouteProp::SaveChanges( void )
         pConfig->UpdateSettings();
     }
 
-    if( m_pRoute->IsActive() || ((Track*) m_pRoute)->IsRunning() )
+    if( m_pRoute && ( m_pRoute->IsActive() || ((Track*) m_pRoute)->IsRunning() ) )
     {
         wxJSONValue v;
         v[_T("Name")] =  m_pRoute->m_RouteNameString;
@@ -2297,9 +2297,6 @@ const wxEventType EVT_LLCHANGE = wxNewEventType();
 //    LatLonTextCtrl Window Implementation
 //------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(LatLonTextCtrl, wxWindow)
-
-EVT_KILL_FOCUS(LatLonTextCtrl::OnKillFocus)
-
 END_EVENT_TABLE()
 
 // constructor
@@ -2996,7 +2993,19 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         if( fillCombo  && icons){
             for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
                 wxString *ps = pWayPointMan->GetIconDescription( i );
-                m_bcomboBoxIcon->Append( *ps, icons->GetBitmap( i ) );
+                wxBitmap bmp = icons->GetBitmap( i );
+
+#ifdef __WXMSW__                
+                int target = 16;
+                int h = bmp.GetHeight();
+                if(bmp.GetHeight() > target){
+                    wxBitmap bmpl = bmp;
+                    wxImage img = bmpl.ConvertToImage();
+                    img.Rescale(target, target, wxIMAGE_QUALITY_HIGH);
+                    bmp = wxBitmap(img);
+                }
+#endif                
+                m_bcomboBoxIcon->Append( *ps, bmp );
             }
         }
         
@@ -3009,7 +3018,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 
         //  not found, so add  it to the list, with a generic bitmap and using the name as description
         // n.b.  This should never happen...
-        if( -1 == iconToSelect){    
+        if( icons && -1 == iconToSelect){
             m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icons->GetBitmap( 0 ) );
             iconToSelect = m_bcomboBoxIcon->GetCount() - 1;
         }

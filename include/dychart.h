@@ -99,7 +99,7 @@
       #define __min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
       #define fmin __min
       #define fmax __max
 
@@ -196,20 +196,6 @@
 #define __POSIX__
 #endif
 
-
-/***********************************************************************
- * Enable GTK Display Optimization
- * Note this requires libgtk+2-devel
- * which is not often available on basic systems.
- * On standard linux platforms, configure will set
- * ocpnUSE_GTK_OPTIMIZE if possible, i.e. if libgtk+2-devel is installed
- */
-
-#ifdef __WXGTK__
-#ifdef ocpnUSE_GTK_OPTIMIZE
-    #include <gtk/gtk.h>
-#endif
-#endif
 
 #ifndef OCPN_GL_INCLUDES
 #define OCPN_GL_INCLUDES 1

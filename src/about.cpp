@@ -55,8 +55,9 @@ extern about *g_pAboutDlg;
 extern bool g_bresponsive;
 
 wxString OpenCPNVersion =
-    wxString::Format( wxT("\n      Version %i.%i.%i Build %s"),
-        VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE );
+    wxString::Format( wxT("\n      Version %i.%i.%i Build "),
+                      VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH )
+    + wxString::FromAscii(VERSION_DATE);
 
 #ifdef __OCPN__ANDROID__NON__FREE__
     wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.5<br>Base %i.%i.%i<br>Build Date %s"),

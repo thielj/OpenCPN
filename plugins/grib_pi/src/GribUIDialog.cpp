@@ -48,8 +48,6 @@
 #include "GribUIDialog.h"
 #include <wx/arrimpl.cpp>
 
-#include "qdebug.h"
-
 //general variables
 double  m_cursor_lat, m_cursor_lon;
 int     m_Altitude;
@@ -57,7 +55,7 @@ int     m_DialogStyle;
 bool    m_OldZoneSelMode;
 int     m_ZoneSelMode;
 
-#if defined (_WIN32)
+#ifdef __MSVC__
 #if _MSC_VER < 1700
 int round (double x) {
 	int i = (int) x;
@@ -107,13 +105,18 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
 }
 
 wxBitmap GetScaledBitmap( const char **pxpm, double scale_factor){
-    wxBitmap a = wxBitmap( pxpm );
-    wxImage b = a.ConvertToImage();
-    int w = a.GetWidth() * scale_factor;
-    int h = a.GetHeight() * scale_factor;
-    b.Rescale( w, h );
-    wxBitmap c = wxBitmap( b );
-    return c;
+
+    if(scale_factor > 1.0){
+        wxBitmap a = wxBitmap( pxpm );
+        wxImage b = a.ConvertToImage();
+        int w = a.GetWidth() * scale_factor;
+        int h = a.GetHeight() * scale_factor;
+        b.Rescale( w, h );
+        wxBitmap c = wxBitmap( b );
+        return c;
+    }
+    else
+        return wxBitmap( pxpm );
 }
 
 
@@ -248,7 +251,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
     //init zone selection parameters
     m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                       ////init zone selection parameters
 
-    double scale_factor = 2.0;
+    double scale_factor = 1.0;
    //set buttons bitmap
     m_bpPrev->SetBitmapLabel(GetScaledBitmap( prev, scale_factor ));
     m_bpNext->SetBitmapLabel(GetScaledBitmap( next, scale_factor ));
@@ -260,7 +263,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
     m_bpOpenFile->SetBitmapLabel(GetScaledBitmap( openfile, scale_factor ));
     m_bpSettings->SetBitmapLabel(GetScaledBitmap( setting, scale_factor ));
 
-     SetRequestBitmap( m_ZoneSelMode );
+    SetRequestBitmap( m_ZoneSelMode );
 
     //connect Timer
     m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUICtrlBar::OnPlayStopTimer ), NULL, this);
@@ -519,7 +522,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
         FindWindow( i + ID_CTRLALTITUDE )->Show( m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) == _T('X') && vis );
     }
     //initiate tooltips
-    m_bpShowCursorData->SetToolTip( m_CDataIsShown ? _("Hide Data at cursor" ) : _("Show Data at cursor" ) );
+    m_bpShowCursorData->SetToolTip( m_CDataIsShown ? _("Hide data at cursor" ) : _("Show data at cursor" ) );
     m_bpPlay->SetToolTip(_("Start play back"));
 
     m_gGrabber->Hide();
@@ -734,32 +737,34 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
 {
-     wxFileConfig *pConf = GetOCPNConfigObject();
+    wxFileConfig *pConf = GetOCPNConfigObject();
 
-     int x,y,w,h;
+    int x = -1;
+    int y = -1;
+    int w = 900;
+    int h = 350;
 
-     if(pConf) {
+    if(pConf) {
         pConf->SetPath ( _T ( "/Settings/GRIB" ) );
 
         pConf->Read( _T ( "GribDataTablePosition_x" ), &x, -1 );
         pConf->Read( _T ( "GribDataTablePosition_y" ), &y, -1 );
         pConf->Read( _T ( "GribDataTableWidth" ), &w, 900 );
         pConf->Read( _T ( "GribDataTableHeight" ), &h, 350 );
-     }
-     //init centered position and default size if not set yet
-     if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
+    }
+    //init centered position and default size if not set yet
+    if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
 
-     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-     GRIBTable *table = new GRIBTable(*this);
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    GRIBTable *table = new GRIBTable(*this);
 
-     table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
-     table->m_pButtonTableOK->SetLabel(_("Close"));
+    table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
+    table->m_pButtonTableOK->SetLabel(_("Close"));
 
-     //set dialog size and position
-     table->SetSize(w, h);
-     table->SetPosition(wxPoint(x, y));
-     table->ShowModal();
-
+    //set dialog size and position
+    table->SetSize(w, h);
+    table->SetPosition(wxPoint(x, y));
+    table->ShowModal();
 }
 
 void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )

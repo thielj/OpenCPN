@@ -105,6 +105,7 @@
 #include "OCPNPlatform.h"
 #include "AISTargetQueryDialog.h"
 #include "S57QueryDialog.h"
+#include "glTexCache.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -146,12 +147,8 @@
 #include "crashprint.h"
 #endif
 
-WX_DECLARE_OBJARRAY(wxDialog *, MyDialogPtrArray);
-
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY( ArrayOfCDI );
-WX_DEFINE_OBJARRAY( ArrayOfRect );
-WX_DEFINE_OBJARRAY( MyDialogPtrArray );
 
 #ifdef __WXMSW__
 void RedirectIOToConsole();
@@ -646,7 +643,6 @@ float                     g_compass_scalefactor;
 
 ocpnCompass              *g_Compass;
 
-MyDialogPtrArray          g_MacShowDialogArray;
 bool                      g_benable_rotate;
 
 bool                      g_bShowMag;
@@ -679,7 +675,7 @@ bool             g_btouch;
 bool             g_bresponsive;
 
 bool             b_inCompressAllCharts;
-bool             g_bexpert;
+bool             g_bGLexpert;
 bool             g_bUIexpert;
 
 int              g_chart_zoom_modifier;
@@ -897,29 +893,30 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     }
     else
     {
+        if(gFrame){
 //        printf("App Activate\n");
-        gFrame->SubmergeToolbar();              // This is needed to reset internal wxWidgets logic
-                                                // Also required for other TopLevelWindows here
-                                                // reportedly not required for wx 2.9
-        gFrame->SurfaceToolbar();
+            gFrame->SubmergeToolbar();              // This is needed to reset internal wxWidgets logic
+                                                    // Also required for other TopLevelWindows here
+                                                    // reportedly not required for wx 2.9
+            gFrame->SurfaceToolbar();
 
-        wxWindow *pOptions = NULL;
+            wxWindow *pOptions = NULL;
 
-        wxWindowListNode *node = AppActivateList.GetFirst();
-        while (node) {
-            wxWindow *win = node->GetData();
-            win->Show();
-            if( win->IsKindOf( CLASSINFO(options) ) )
-                pOptions = win;
+            wxWindowListNode *node = AppActivateList.GetFirst();
+            while (node) {
+                wxWindow *win = node->GetData();
+                win->Show();
+                if( win->IsKindOf( CLASSINFO(options) ) )
+                    pOptions = win;
 
-            node = node->GetNext();
+                node = node->GetNext();
+            }
+
+            if( pOptions )
+                pOptions->Raise();
+            else
+                gFrame->Raise();
         }
-
-        if( pOptions )
-            pOptions->Raise();
-        else
-            gFrame->Raise();
-
     }
 #endif
 
@@ -1080,7 +1077,7 @@ void LoadS57()
 #endif
 }
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) && defined(OCPN_HAVE_X11)
 static char *get_X11_property (Display *disp, Window win,
                             Atom xa_prop_type, const char *prop_name) {
     Atom xa_prop_name;
@@ -1405,7 +1402,18 @@ bool MyApp::OnInit()
 
     //  Get the default language info
     wxString def_lang_canonical;
+#ifdef __WXMSW__
+    LANGID lang_id = GetUserDefaultUILanguage();
+    wxChar lngcp[100];
+    const wxLanguageInfo* languageInfo = 0;
+    if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
+        languageInfo = wxLocale::FindLanguageInfo(lngcp);
+    }
+    else
+        languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+#else
     const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+#endif
     if( languageInfo ) {
         def_lang_canonical = languageInfo->CanonicalName;
         imsg = _T("System default Language:  ");
@@ -1536,7 +1544,7 @@ bool MyApp::OnInit()
                 (wm_name = get_X11_property(disp, *sup_window,
                                         XA_STRING, "_NET_WM_NAME"))) {
                 // we know it works in xfce4, add other checks as we can validate them
-                if(strstr(wm_name, "Xfwm4"))
+                if(strstr(wm_name, "Xfwm4") || strstr(wm_name, "Compiz"))
                     g_bTransparentToolbarInOpenGLOK = true;
 
                 free(wm_name);
@@ -1871,6 +1879,16 @@ bool MyApp::OnInit()
             }
 
         }
+
+		if (g_bportable)
+		{
+			ChartDirInfo cdi;
+			cdi.fullpath =_T("charts");
+			cdi.fullpath.Prepend(g_Platform->GetSharedDataDir());
+			cdi.magic_number = _T("");
+			ChartDirArray.Add(cdi);
+			ndirs++;
+		}
 
         if( ndirs ) pConfig->UpdateChartDirs( ChartDirArray );
 
@@ -2378,7 +2396,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
 
     bFirstAuto = true;
-
+    b_autofind = false;
+    
     //  Create/connect a dynamic event handler slot for OCPN_MsgEvent(s) coming from PlugIn system
     Connect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
 
@@ -2623,8 +2642,13 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     if( g_FloatingToolbarDialog ){
         tb = g_FloatingToolbarDialog->GetToolbar();
-        if(tb)
-            g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+        if(tb){
+            if(g_Compass)
+                g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+            else
+                g_FloatingToolbarDialog->SetGeometry(false, wxRect(0,0,1,1));
+        }
+            
     }
     if( !tb )
         return 0;
@@ -2922,9 +2946,13 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
             DestroyMyToolbar();
 
         g_toolbar = CreateAToolbar();
-        g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetColorScheme( global_color_scheme );
-        g_FloatingToolbarDialog->Show( b_reshow && g_bshowToolbar );
+        if (g_FloatingToolbarDialog->m_bsubmerged) {
+            g_FloatingToolbarDialog->SubmergeToGrabber();
+        } else {
+            g_FloatingToolbarDialog->RePosition();
+            g_FloatingToolbarDialog->SetColorScheme(global_color_scheme);
+            g_FloatingToolbarDialog->Show(b_reshow && g_bshowToolbar);
+        }
 
 #ifndef __WXQT__
         gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
@@ -2946,6 +2974,8 @@ void MyFrame::UpdateToolbar( ColorScheme cs )
         if( g_FloatingToolbarDialog->IsToolbarShown() ) {
             DestroyMyToolbar();
             g_toolbar = CreateAToolbar();
+            if (g_FloatingToolbarDialog->m_bsubmerged) 
+                g_FloatingToolbarDialog->SubmergeToGrabber();
         }
     }
 
@@ -3627,9 +3657,11 @@ void MyFrame::PositionConsole( void )
 
     console->GetSize( &consx, &consy );
 
-    int yOffset = 45;
-    if(g_Compass)
-        yOffset = g_Compass->GetRect().y + g_Compass->GetRect().height + 45;
+    int yOffset = 60;
+    if(g_Compass){
+        if(g_Compass->GetRect().y < 100)        // Compass is is normal upper right position.                
+            yOffset = g_Compass->GetRect().y + g_Compass->GetRect().height + 45;
+    }
     
     wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + yOffset ) );
     console->Move( screen_pos );
@@ -4241,6 +4273,7 @@ void MyFrame::ToggleFullScreen()
 
     ShowFullScreen( to, style );
     UpdateToolbar( global_color_scheme );
+    SurfaceToolbar();
     UpdateControlBar();
     Layout();
 }
@@ -4511,29 +4544,28 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
             }
 	    pOLE = NULL;
         }
-    }
 
-    oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
+        oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
 
-    if( doToggle ){
-        if(oldstate)                            // On, going off
-            ps52plib->AddObjNoshow("LIGHTS");
-        else{                                   // Off, going on
-            if(pOLE)
-                pOLE->nViz = 1;
-            ps52plib->RemoveObjNoshow("LIGHTS");
+        if( doToggle ){
+            if(oldstate)                            // On, going off
+                ps52plib->AddObjNoshow("LIGHTS");
+            else{                                   // Off, going on
+                if(pOLE)
+                    pOLE->nViz = 1;
+                ps52plib->RemoveObjNoshow("LIGHTS");
+            }
+
+            SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
         }
 
-        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
-    }
-
-    if( doToggle ) {
-        if( ! temporary ) {
-            ps52plib->GenerateStateHash();
-            cc1->ReloadVP();
+        if( doToggle ) {
+            if( ! temporary ) {
+                ps52plib->GenerateStateHash();
+                cc1->ReloadVP();
+            }
         }
     }
-
 
 #endif
     return oldstate;
@@ -4590,21 +4622,17 @@ void MyFrame::ToggleAnchor( void )
         else if(OTHER == ps52plib->GetDisplayCategory())
             old_vis = true;
 
-        const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
+        const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
 
         old_vis &= !ps52plib->IsObjNoshow("SBDARE");
 
         if(old_vis){                            // On, going off
-            ps52plib->AddObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->AddObjNoshow(categories[c]);
             }
         }
         else{                                   // Off, going on
-            if(pOLE)
-                pOLE->nViz = 1;
-            ps52plib->RemoveObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->RemoveObjNoshow(categories[c]);
             }
@@ -5100,7 +5128,7 @@ int MyFrame::DoOptionsDialog()
     options_lastWindowPos = g_options->lastWindowPos;
     options_lastWindowSize = g_options->lastWindowSize;
 
-    if( b_sub ) {
+    if( 1/*b_sub*/ ) {          // always surface toolbar, and restart the timer if needed
         SurfaceToolbar();
         cc1->SetFocus();
     }
@@ -5520,8 +5548,8 @@ void MyFrame::ToggleQuiltMode( void )
             cc1->InvalidateGL();
             Refresh();
         }
+        g_bQuiltEnable = cc1->GetQuiltMode();
     }
-    g_bQuiltEnable = cc1->GetQuiltMode();
 }
 
 void MyFrame::SetQuiltMode( bool bquilt )
@@ -5793,6 +5821,13 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         // Load the waypoints.. both of these routines are very slow to execute which is why
         // they have been to defered until here
         pWayPointMan = new WayPointman();
+        
+        // Reload the ownship icon from UserIcons, if present
+        if(cc1){
+            if(cc1->SetUserOwnship())
+                cc1->SetColorScheme(global_color_scheme);
+        }
+        
         pConfig->LoadNavObjects();
 
         //    Re-enable anchor watches if set in config file
@@ -9941,6 +9976,12 @@ int isTTYreal(const char *dev)
 
 #endif
 
+#ifdef __MINGW32__ // do I need this because of mingw, or because I am running mingw under wine?
+# ifndef GUID_CLASS_COMPORT
+DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
+# endif
+#endif
+
 wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
@@ -11264,7 +11305,7 @@ void RedirectIOToConsole()
 
     int hConHandle;
 
-    long lStdHandle;
+    wxIntPtr lStdHandle;
 
     CONSOLE_SCREEN_BUFFER_INFO coninfo;
 
@@ -11282,7 +11323,7 @@ void RedirectIOToConsole()
 
     // redirect unbuffered STDOUT to the console
 
-    lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+    lStdHandle = (wxIntPtr)GetStdHandle(STD_OUTPUT_HANDLE);
     hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
     fp = _fdopen( hConHandle, "w" );
     *stdout = *fp;
@@ -11291,7 +11332,7 @@ void RedirectIOToConsole()
 
     // redirect unbuffered STDIN to the console
 
-    lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+    lStdHandle = (wxIntPtr)GetStdHandle(STD_INPUT_HANDLE);
     hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
     fp = _fdopen( hConHandle, "r" );
     *stdin = *fp;
@@ -11299,7 +11340,7 @@ void RedirectIOToConsole()
 
     // redirect unbuffered STDERR to the console
 
-    lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
+    lStdHandle = (wxIntPtr)GetStdHandle(STD_ERROR_HANDLE);
     hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
     fp = _fdopen( hConHandle, "w" );
     *stderr = *fp;
@@ -11316,8 +11357,9 @@ void RedirectIOToConsole()
 
 
 #ifdef __WXMSW__
-bool TestGLCanvas(wxString &prog_dir)
+bool TestGLCanvas(wxString prog_dir)
 {
+#ifdef __MSVC__
     wxString test_app = prog_dir;
     test_app += _T("ocpn_gltest1.exe");
 
@@ -11333,8 +11375,10 @@ bool TestGLCanvas(wxString &prog_dir)
     }
     else
         return true;
-
-
+#else
+    /* until we can get the source to ocpn_gltest1 assume true for mingw */
+    return true;
+#endif
 }
 #endif
 

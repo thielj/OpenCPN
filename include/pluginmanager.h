@@ -38,16 +38,21 @@
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 #include "chcanv.h"                 // for ViewPort
-#include "datastream.h"             // for GenericPosDat
 #include "OCPN_Sound.h"
 #include "s52s57.h"
 #include "s57chart.h"               // for Object list
+#include "chartimg.h"
 
 //For widgets...
 #include "wx/hyperlink.h"
 #include <wx/choice.h>
 #include <wx/tglbtn.h>
 #include <wx/bmpcbox.h>
+
+#ifndef __OCPN__ANDROID__
+#include "wx/curl/http.h"
+#include "wx/curl/dialog.h"
+#endif
 
 //    Include wxJSON headers
 //    We undefine MIN/MAX so avoid warning of redefinition coming from
@@ -215,7 +220,7 @@ WX_DEFINE_ARRAY_PTR(PlugInToolbarToolContainer *, ArrayOfPlugInToolbarTools);
 //
 //-----------------------------------------------------------------------------------------------------
 
-class PlugInManager
+class PlugInManager: public wxEvtHandler
 {
 
 public:
@@ -315,6 +320,23 @@ private:
       wxArrayString     m_plugin_order;
       void SetPluginOrder( wxString serialized_names );
       wxString GetPluginOrder();
+    
+#ifndef __OCPN__ANDROID__
+public:
+      wxCurlDownloadThread *m_pCurlThread;
+      // returns true if the error can be ignored
+      bool            HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread *p,
+                               const wxString &url = wxEmptyString);
+      void            OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev);
+      void            OnCurlDownload(wxCurlDownloadEvent &ev);
+      
+      wxEvtHandler   *m_download_evHandler;
+      long           *m_downloadHandle;
+      bool m_last_online;
+      long m_last_online_chk;
+#endif
+
+DECLARE_EVENT_TABLE()
 };
 
 WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
