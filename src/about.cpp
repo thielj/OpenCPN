@@ -58,8 +58,10 @@ wxString OpenCPNVersion =
     wxString::Format( wxT("\n      Version %i.%i.%i Build %s"),
         VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE );
 
+#ifdef __OCPN__ANDROID__NON__FREE__
     wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.5<br>Base %i.%i.%i<br>Build Date %s"),
                                      VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
+#endif
     
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
@@ -74,6 +76,7 @@ const wxString OpenCPNInfo =
     wxT("or donating funds to the project.<br><br>")
     wxT("For more information, visit http://opencpn.org<br><br>");
 
+#ifdef __OCPN__ANDROID__NON__FREE__
 const wxString OpenCPNInfoAlt =
     wxT("<br><br>")
     wxT("OpenCPN is a Free Software project, built by sailors.")
@@ -82,7 +85,7 @@ const wxString OpenCPNInfoAlt =
     wxT("subject to applicable License agreements.")
     wxT("<br><br>")
     wxT("For more information, visit http://opencpn.org<br><br>");
-    
+#endif
     
 const wxString AuthorText =
     wxT("   David S Register\n")
@@ -265,11 +268,11 @@ void about::Populate( void )
     if( wxFONTSTYLE_ITALIC == dFont->GetStyle() )
         aboutText.Append( _T("<i>") );
 
-#ifdef __OCPN__ANDROID__    
+#ifdef __OCPN__ANDROID__NON__FREE__
     aboutText.Append( AboutText + OpenCPNVersionAndroid  + OpenCPNInfoAlt );
 #else
     aboutText.Append( AboutText + OpenCPNVersion + OpenCPNInfo );
-#endif    
+#endif
 
     // Show where the log file is going to be placed
     wxString log_string = _T("Logfile location: ") + g_Platform->GetLogFileName();
