@@ -18,6 +18,10 @@ TEMPLATE = app
 #wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #wxQt_Build=build_android_55
 
+isEmpty(wxQt_Target){
+  wxQt_Target = arm-linux-androideabi
+}
+
 # OCPN target
 #OCPN_Base=/home/dsr/Projects/opencpn_sf/opencpn
 #OCPN_Build=build_android_55
@@ -36,21 +40,21 @@ LIBS += -L$${OCPN_Base}/$${OCPN_Build}
 
 LIBS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
 
-INCLUDEPATH += $${wxQt_Base}/$${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1
+INCLUDEPATH += $${wxQt_Base}/$${wxQt_Build}/lib/wx/include/$${wxQt_Target}-qt-unicode-static-3.1
 
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_html-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_xml-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_qa-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_adv-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_aui-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxexpat-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxregexu-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxjpeg-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxpng-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-$${wxQt_Target}.a
+LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1-$${wxQt_Target}.a
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
 LIBS += -lGL -lGLU
 
@@ -71,9 +75,9 @@ contains(wxQt_Build,53)
 
 TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
 
-TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
+TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1-$${wxQt_Target}.a
+TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-$${wxQt_Target}.a
+TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-$${wxQt_Target}.a
 
 
 
@@ -86,7 +90,7 @@ CONFIG += mobility
 CONFIG += debug
 MOBILITY =
 
-ANDROID_EXTRA_LIBS = $$PWD/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
+#ANDROID_EXTRA_LIBS = $$PWD/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
 # To execute the assetbridge runtime code, we make a custom modification to the android Activity method.
 
@@ -175,9 +179,6 @@ INSTALLS += wmm_plugin_deployment
 #INSTALLS += so_grib_plugin_deployment
 #------------------------------------------------------------------------------------
 
-
-ANDROID_EXTRA_LIBS = \
-        /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
 
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/dashboard_pi/libdashboard_pi.so
