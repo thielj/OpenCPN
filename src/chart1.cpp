@@ -44,6 +44,7 @@
 #include <wx/progdlg.h>
 #include <wx/clrpicker.h>
 #include "wx/tokenzr.h"
+#include "wx/dir.h"
 
 #include <wx/dialog.h>
 
@@ -312,6 +313,7 @@ ColorScheme               global_color_scheme;
 int                       Usercolortable_index;
 wxArrayPtrVoid            *UserColorTableArray;
 wxArrayPtrVoid            *UserColourHashTableArray;
+
 wxColorHashMap            *pcurrent_user_color_hash;
 
 int                       gps_watchdog_timeout_ticks;
@@ -2969,13 +2971,16 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
 void MyFrame::UpdateToolbar( ColorScheme cs )
 {
     if( g_FloatingToolbarDialog ) {
-        g_FloatingToolbarDialog->SetColorScheme( cs );
+        if(g_FloatingToolbarDialog->GetColorScheme() != cs){
+            g_FloatingToolbarDialog->SetColorScheme( cs );
 
-        if( g_FloatingToolbarDialog->IsToolbarShown() ) {
-            DestroyMyToolbar();
-            g_toolbar = CreateAToolbar();
-            if (g_FloatingToolbarDialog->m_bsubmerged) 
-                g_FloatingToolbarDialog->SubmergeToGrabber();
+            if( g_FloatingToolbarDialog->IsToolbarShown() ) {
+                DestroyMyToolbar();
+                g_toolbar = CreateAToolbar();
+                if (g_FloatingToolbarDialog->m_bsubmerged) 
+                    g_FloatingToolbarDialog->SubmergeToGrabber(); //Surface(); //SubmergeToGrabber();
+            
+            }
         }
     }
 
@@ -4532,9 +4537,9 @@ void MyFrame::ToggleSoundings( void )
 bool MyFrame::ToggleLights( bool doToggle, bool temporary )
 {
     bool oldstate = true;
-    OBJLElement *pOLE = NULL;
 
 #ifdef USE_S57
+    OBJLElement *pOLE = NULL;
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
@@ -9356,7 +9361,7 @@ void MyFrame::applySettingsString( wxString settings)
             *pInit_Chart_Dir = val;
         }
 
-        
+#ifdef USE_S57
         if(ps52plib){
             float conv = 1;
             int depthUnit = ps52plib->m_nDepthUnitDisplay;
@@ -9488,6 +9493,7 @@ void MyFrame::applySettingsString( wxString settings)
                 }
             }
         }
+#endif        
     }
 
     // Process Connections
@@ -9564,6 +9570,7 @@ void MyFrame::applySettingsString( wxString settings)
     if(last_ChartScaleFactorExp != g_ChartScaleFactor)
         rr |= S52_CHANGED;
     
+#ifdef USE_S57
     if(rr & S52_CHANGED){
         if(ps52plib){
             ps52plib->FlushSymbolCaches();
@@ -9571,6 +9578,7 @@ void MyFrame::applySettingsString( wxString settings)
             ps52plib->GenerateStateHash();
         }
     }
+#endif
 
     ProcessOptionsDialog( rr,  &NewDirArray );
 

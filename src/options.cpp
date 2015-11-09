@@ -40,6 +40,7 @@
 #include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
 #include "wx/tokenzr.h"
+#include "wx/dir.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -1069,8 +1070,8 @@ bool options::DeletePage(wxScrolledWindow* page) {
         wxString toptitle = m_pListbook->GetPageText(i);
         m_pListbook->DeletePage(i);
         m_pListbook->InsertPage(i, spg, toptitle, FALSE, i);
-        return TRUE;
       }
+      return TRUE;
     } else if (pg == page) {
       /* There's only one page, replace it with empty panel */
       m_pListbook->DeletePage(i);
@@ -5029,6 +5030,8 @@ void options::UpdateOptionsUnits(void) {
     conv = 0.3048f * 6;     // 1 fathom is 6 feet
 
   // set depth input values
+#ifdef USE_S57
+  
   wxString s;
   s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR) / conv);
   s.Trim(FALSE);
@@ -5041,6 +5044,7 @@ void options::UpdateOptionsUnits(void) {
   s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_DEEP_CONTOUR) / conv);
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
+#endif  
 }
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
@@ -5296,14 +5300,16 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
 
   //  DataStreams should be Input, Output, or Both
   if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
-    OCPNMessageBox(NULL, _("Data connection must be input, output or both"),
+      m_pListbook->SetSelection(2);   // Raise connections page.
+      OCPNMessageBox(NULL, _("Data connection must be input, output or both"),
                    _("OpenCPN Info"), wxICON_HAND);
 
     return NULL;
   }
 
   if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString) {
-    OCPNMessageBox(NULL, _("You must select or enter the port..."),
+      m_pListbook->SetSelection(2);   // Raise connections page.
+      OCPNMessageBox(NULL, _("You must select or enter the port..."),
                    _("OpenCPN Info"), wxICON_HAND);
     return NULL;
   }
@@ -5311,14 +5317,16 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   //  TCP clients, GPSD and UDP output sockets require an address
   else if (m_rbTypeNet->GetValue()) {
     if (wxAtoi(m_tNetPort->GetValue()) == 0) {
-      OCPNMessageBox(NULL, _("You must enter a port..."), _("OpenCPN Info"),
+        m_pListbook->SetSelection(2);   // Raise connections page.
+        OCPNMessageBox(NULL, _("You must enter a port..."), _("OpenCPN Info"),
                      wxICON_HAND);
       return NULL;
     }
     if (m_tNetAddress->GetValue() == wxEmptyString) {
       if ((m_rbNetProtoGPSD->GetValue()) ||
           (m_rbNetProtoUDP->GetValue() && m_cbOutput->GetValue())) {
-        OCPNMessageBox(NULL, _("You must enter the address..."),
+          m_pListbook->SetSelection(2);   // Raise connections page.
+          OCPNMessageBox(NULL, _("You must enter the address..."),
                        _("OpenCPN Info"), wxICON_HAND);
         return NULL;
       } else {
@@ -6139,7 +6147,7 @@ void options::OnNBPageChange(wxNotebookEvent& event) {
 void options::DoOnPageChange(size_t page) {
   unsigned int i = page;
   lastPage = i;
-
+  
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page

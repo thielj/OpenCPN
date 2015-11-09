@@ -2355,6 +2355,7 @@ bool s57chart::RenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint )
         m_bLinePrioritySet = false;                     // need to reset line priorities
         UpdateLUPs( this );                               // and update the LUPs
         ClearRenderedTextCache();                       // and reset the text renderer
+        SetSafetyContour();
     }
 
     SetLinePriorities();
@@ -3045,6 +3046,17 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
     return INIT_OK;
 }
 
+void s57chart::ClearDepthContourArray( void )
+{
+    
+    if( m_nvaldco_alloc ) {
+        free (m_pvaldco_array);
+    }
+    m_nvaldco_alloc = 5;
+    m_nvaldco = 0;
+    m_pvaldco_array = (double *) calloc( m_nvaldco_alloc, sizeof(double) );
+}
+
 void s57chart::BuildDepthContourArray( void )
 {
     //    Build array of contour values for later use by conditional symbology
@@ -3086,6 +3098,7 @@ void s57chart::BuildDepthContourArray( void )
         }
     }
     std::sort( m_pvaldco_array, m_pvaldco_array + m_nvaldco );
+    SetSafetyContour();
 }
 
 
@@ -4266,6 +4279,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 LogMessageOnce( msg );
             }
             delete obj;
+            obj = NULL;
             Objects[i] = NULL;
         } else {
             //              Convert LUP to rules set
@@ -4294,7 +4308,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         }
 
         //      Build/Maintain the ATON floating/rigid arrays
-        if( GEO_POINT == obj->Primitive_type ) {
+        if( obj && (GEO_POINT == obj->Primitive_type) ) {
             
             // set floating platform
             if( ( !strncmp( obj->FeatureName, "LITFLT", 6 ) )

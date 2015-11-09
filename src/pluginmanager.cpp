@@ -2907,7 +2907,7 @@ void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat, float lon )
     vp->clon = ocpn_vp.clon;
     vp->view_scale_ppm = ocpn_vp.view_scale_ppm;
     vp->rotation = ocpn_vp.rotation;
-    vp->rotation = ocpn_vp.skew;
+    vp->skew = ocpn_vp.skew;
 #endif    
 }
 
@@ -3941,7 +3941,10 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
                     ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
                     
                     glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+
+#ifdef USE_S57
                     ps52plib->m_last_clip_rect = upd.GetRect();
+#endif                    
                     glPushMatrix(); //    Adjust for rotation
                     glChartCanvas::RotateToViewPort(VPoint);
 
@@ -4177,7 +4180,7 @@ wxString PlugInManager::CreateObjDescriptions( ChartPlugInWrapper *target, ListO
 }
 
 
-
+#ifdef USE_S57
 //      API 1.11 Access to S52 PLIB
 wxString PI_GetPLIBColorScheme()
 {
@@ -4809,6 +4812,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     return 1;
     
 }
+#endif  //USE_S57
 
 /* API 1.13  */
 
@@ -4905,6 +4909,7 @@ OCPN_downloadEvent::OCPN_downloadEvent(wxEventType commandType, int id)
     m_stat = OCPN_DL_UNKNOWN;
     m_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
     m_b_complete = false;
+    m_sofarBytes = 0;
 }
 
 OCPN_downloadEvent::~OCPN_downloadEvent()
@@ -5346,7 +5351,7 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
     
     if( res )
     {
-        result = post.GetResponseBody();
+        result = wxString(post.GetResponseBody().c_str(), wxConvUTF8);
         return OCPN_DL_NO_ERROR;
     } else
         result = wxEmptyString;

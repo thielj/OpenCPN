@@ -2184,6 +2184,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
       //    Check the member array to see if all these viewport cells have been loaded
       bool bcell_is_in;
+      bool recalc_depth = false;
 
       for ( unsigned int i=0 ; i < vpcells.GetCount() ; i++ )
       {
@@ -2208,8 +2209,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                         CreateObjChain ( cell_index, ( int ) '0', vpt.view_scale_ppm );
 
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
-
-                        BuildDepthContourArray();
+                        recalc_depth = true;
 
                         m_cells_loaded_array.Add ( cell_index );
 
@@ -2235,6 +2235,10 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                         loadcell_key++;
                   }
             }
+      }
+      if (recalc_depth) {
+          ClearDepthContourArray();
+          BuildDepthContourArray();
       }
       if( s_b_busy_shown){
           OCPNPlatform::HideBusySpinner();

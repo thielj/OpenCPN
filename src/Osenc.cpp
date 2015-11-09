@@ -70,6 +70,9 @@ void Osenc::init( void )
     m_senc_file_version = 0;
     s_ProgDialog = NULL;
     
+    m_ref_lat = 0;
+    m_ref_lon = 0;
+    
 }
 
 int Osenc::ingestHeader(const wxString &senc_file_name)
@@ -1173,7 +1176,7 @@ int Osenc::ingestCell( const wxString &FullPath000, const wxString &working_dir 
     
     bool bcont = true;
     int iObj = 0;
-    OGRwkbGeometryType geoType;
+ //   OGRwkbGeometryType geoType;
     wxString sobj;
     
     //  Here comes the actual ISO8211 file reading
