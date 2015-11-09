@@ -1625,7 +1625,7 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
     
-    for(wxRouteListNode *node = pRouteList->GetFirst();
+    for(RouteList::compatibility_iterator node = pRouteList->GetFirst();
         node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
 
@@ -1673,7 +1673,7 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
         
     /* Waypoints not drawn as part of routes, and not being edited */
     if( vp.GetBBox().GetValid() && pWayPointMan) {
-        for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
+        for(RoutePointList::compatibility_iterator pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
             if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
                 pWP->DrawGL( vp );
@@ -1684,7 +1684,7 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
 void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
-    for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
+    for(RouteList::compatibility_iterator node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
         
         int drawit = 0;
@@ -1744,7 +1744,7 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
     /* Waypoints not drawn as part of routes, which are being edited right now */
     if( vp.GetBBox().GetValid() && pWayPointMan) {
         
-        for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
+        for(RoutePointList::compatibility_iterator pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
             if( pWP && (pWP->m_bIsBeingEdited) && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) ){
                 pWP->DrawGL( vp );

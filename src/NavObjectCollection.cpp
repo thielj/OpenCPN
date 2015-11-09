@@ -654,7 +654,7 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
     if(flags & OUT_HYPERLINKS ){
         HyperlinkList *linklist = pr->m_HyperlinkList;
         if( linklist && linklist->GetCount() ) {
-            wxHyperlinkListNode *linknode = linklist->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = linklist->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
                 
@@ -770,7 +770,7 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute, unsigned int flags )
     // Hyperlinks
     HyperlinkList *linklist = pRoute->m_HyperlinkList;
     if( linklist && linklist->GetCount() ) {
-        wxHyperlinkListNode *linknode = linklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode = linklist->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
         
@@ -839,7 +839,7 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute, unsigned int flags )
         return true;
     
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
-    wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;
         
     unsigned short int GPXTrkSegNo1 = 1;
@@ -890,7 +890,7 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     // Hyperlinks
     HyperlinkList *linklist = pRoute->m_HyperlinkList;
     if( linklist && linklist->GetCount() ) {
-        wxHyperlinkListNode *linknode = linklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode = linklist->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
         
@@ -974,7 +974,7 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     }
                                  
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
-    wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;
     
     unsigned short int GPXTrkSegNo1 = 1;
@@ -1020,7 +1020,7 @@ void InsertRouteA( Route *pTentRoute )
                     float prev_rlat = 0., prev_rlon = 0.;
                     RoutePoint *prev_pConfPoint = NULL;
                     
-                    wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
+                    RoutePointList::compatibility_iterator node = pTentRoute->pRoutePointList->GetFirst();
                     while( node ) {
                         RoutePoint *prp = node->GetData();
                         
@@ -1040,7 +1040,7 @@ void InsertRouteA( Route *pTentRoute )
     else {
         
         // walk the route, deleting points used only by this route
-        wxRoutePointListNode *pnode = ( pTentRoute->pRoutePointList )->GetFirst();
+        RoutePointList::compatibility_iterator pnode = ( pTentRoute->pRoutePointList )->GetFirst();
         while( pnode ) {
             RoutePoint *prp = pnode->GetData();
             
@@ -1089,7 +1089,7 @@ void InsertTrack( Route *pTentTrack )
                 float prev_rlat = 0., prev_rlon = 0.;
                 RoutePoint *prev_pConfPoint = NULL;
                 
-                wxRoutePointListNode *node = pTentTrack->pRoutePointList->GetFirst();
+                RoutePointList::compatibility_iterator node = pTentTrack->pRoutePointList->GetFirst();
                 while( node ) {
                     
                     RoutePoint *prp = node->GetData();
@@ -1108,7 +1108,7 @@ void InsertTrack( Route *pTentTrack )
          } else {
              
              // walk the route, deleting points used only by this route
-             wxRoutePointListNode *pnode = ( pTentTrack->pRoutePointList )->GetFirst();
+             RoutePointList::compatibility_iterator pnode = ( pTentTrack->pRoutePointList )->GetFirst();
              while( pnode ) {
                  RoutePoint *prp = pnode->GetData();
                  
@@ -1164,7 +1164,7 @@ void UpdateRouteA( Route *pTentRoute )
     float prev_rlat = 0., prev_rlon = 0.;
     RoutePoint *prev_pConfPoint = NULL;
 
-    wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pTentRoute->pRoutePointList->GetFirst();
     while( node ) {
 		RoutePoint *prp = node->GetData();
 
@@ -1212,7 +1212,7 @@ bool NavObjectCollection1::CreateNavObjGPXPoints( void )
     if(!pWayPointMan)
         return false;
 
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
     
     RoutePoint *pr;
     
@@ -1232,7 +1232,7 @@ bool NavObjectCollection1::CreateNavObjGPXPoints( void )
 bool NavObjectCollection1::CreateNavObjGPXRoutes( void )
 {
     // Routes
-    wxRouteListNode *node1 = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
     while( node1 ) {
         Route *pRoute = node1->GetData();
         
@@ -1247,7 +1247,7 @@ bool NavObjectCollection1::CreateNavObjGPXRoutes( void )
 bool NavObjectCollection1::CreateNavObjGPXTracks( void )
 {
     // Tracks
-    wxRouteListNode *node1 = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
     while( node1 ) {
         Route *pTrack = node1->GetData();
         RoutePointList *pRoutePointList = pTrack->pRoutePointList;
@@ -1300,7 +1300,7 @@ bool NavObjectCollection1::AddGPXRoutesList( RouteList *pRoutes )
 {
     SetRootGPXNode();
     
-    wxRouteListNode* pRoute = pRoutes->GetFirst();
+    RouteList::compatibility_iterator pRoute = pRoutes->GetFirst();
     while (pRoute) {
         Route* pRData = pRoute->GetData();
         if( !pRData->m_bIsTrack ) {
@@ -1318,7 +1318,7 @@ bool NavObjectCollection1::AddGPXPointsList( RoutePointList *pRoutePoints )
 {
     SetRootGPXNode();
     
-    wxRoutePointListNode* pRoutePointNode = pRoutePoints->GetFirst();
+    RoutePointList::compatibility_iterator pRoutePointNode = pRoutePoints->GetFirst();
     while (pRoutePointNode) {
         RoutePoint* pRP = pRoutePointNode->GetData();
         AddGPXWaypoint( pRP);

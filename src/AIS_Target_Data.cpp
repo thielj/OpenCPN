@@ -217,7 +217,7 @@ void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
     m_ptrack = new AISTargetTrackList;
     m_ptrack->DeleteContents(true);
     
-    wxAISTargetTrackListNode *node = q->m_ptrack->GetFirst();
+    AISTargetTrackList::compatibility_iterator node = q->m_ptrack->GetFirst();
     while( node ) {
         AISTargetTrackPoint *ptrack_point = node->GetData();
         m_ptrack->Append( ptrack_point );

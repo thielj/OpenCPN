@@ -27,7 +27,7 @@
 #include "ConnectionParams.h"
 
 #if !wxUSE_XLOCALE && wxCHECK_VERSION(3,0,0)
-#define wxAtoi(arg) atoi(arg)
+#define wxAtoi(arg) atoi(arg.c_str())
 #endif
 
 

@@ -2481,7 +2481,7 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
     //  GUID
     //  Make sure that this GUID is indeed unique in the Routepoint list
     bool b_unique = true;
-    wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator prpnode = pWayPointMan->GetWaypointList()->GetFirst();
     while( prpnode ) {
         RoutePoint *prp = prpnode->GetData();
 
@@ -2505,7 +2505,7 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
     //  Transcribe (clone) the html HyperLink List, if present
     if( pwaypoint->m_HyperlinkList ) {
         if( pwaypoint->m_HyperlinkList->GetCount() > 0 ) {
-            wxPlugin_HyperlinkListNode *linknode = pwaypoint->m_HyperlinkList->GetFirst();
+            Plugin_HyperlinkList::compatibility_iterator linknode = pwaypoint->m_HyperlinkList->GetFirst();
             while( linknode ) {
                 Plugin_Hyperlink *link = linknode->GetData();
 
@@ -2580,7 +2580,7 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
         if( pwaypoint->m_HyperlinkList ) {
             prp->m_HyperlinkList->Clear();
             if( pwaypoint->m_HyperlinkList->GetCount() > 0 ) {
-                wxPlugin_HyperlinkListNode *linknode = pwaypoint->m_HyperlinkList->GetFirst();
+                Plugin_HyperlinkList::compatibility_iterator linknode = pwaypoint->m_HyperlinkList->GetFirst();
                 while( linknode ) {
                     Plugin_Hyperlink *link = linknode->GetData();
 
@@ -2638,7 +2638,7 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint *pwaypoint)
         if( prp->m_HyperlinkList->GetCount() > 0 ) {
             pwaypoint->m_HyperlinkList = new Plugin_HyperlinkList;
 
-            wxHyperlinkListNode *linknode = prp->m_HyperlinkList->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = prp->m_HyperlinkList->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
                 
@@ -2662,7 +2662,7 @@ wxArrayString GetWaypointGUIDArray( void )
     wxArrayString result;
     RoutePointList *list = pWayPointMan->GetWaypointList();
     
-    wxRoutePointListNode *prpnode = list->GetFirst();
+    RoutePointList::compatibility_iterator prpnode = list->GetFirst();
     while( prpnode ) {
         RoutePoint *prp = prpnode->GetData();
         result.Add(prp->m_GUID);
@@ -2682,7 +2682,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
     RoutePoint *pWP_src;
     int ip = 0;
 
-    wxPlugin_WaypointListNode *pwpnode = proute->pWaypointList->GetFirst();
+    Plugin_WaypointList::compatibility_iterator pwpnode = proute->pWaypointList->GetFirst();
     while( pwpnode ) {
         pwp = pwpnode->GetData();
 
@@ -2693,7 +2693,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
         //  Transcribe (clone) the html HyperLink List, if present
         if( pwp->m_HyperlinkList ) {
             if( pwp->m_HyperlinkList->GetCount() > 0 ) {
-                wxPlugin_HyperlinkListNode *linknode = pwp->m_HyperlinkList->GetFirst();
+                Plugin_HyperlinkList::compatibility_iterator linknode = pwp->m_HyperlinkList->GetFirst();
                 while( linknode ) {
                     Plugin_Hyperlink *link = linknode->GetData();
 
@@ -2787,7 +2787,7 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
     RoutePoint *pWP_src;
     int ip = 0;
 
-    wxPlugin_WaypointListNode *pwpnode = ptrack->pWaypointList->GetFirst();
+    Plugin_WaypointList::compatibility_iterator pwpnode = ptrack->pWaypointList->GetFirst();
     while( pwpnode ) {
         pwp = pwpnode->GetData();
 

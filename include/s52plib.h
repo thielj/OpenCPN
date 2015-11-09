@@ -39,7 +39,7 @@ class wxGLContext;
 
 //    wxWindows Hash Map Declarations
 #include <wx/hashmap.h>
-class RuleHash;
+//class RuleHash;
 
 WX_DECLARE_HASH_MAP( wxString, Rule*, wxStringHash, wxStringEqual, RuleHash );
 WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, MyNatsurHash );

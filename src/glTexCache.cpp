@@ -681,7 +681,7 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
     wxString chart_path = client->GetChartPath();
 
     //  Avoid adding duplicate jobs, i.e. the same chart_path, and the same rectangle
-    wxJobListNode *node = todo_list.GetFirst();
+    JobList::compatibility_iterator node = todo_list.GetFirst();
     while(node){
         JobTicket *ticket = node->GetData();
         if( (ticket->m_ChartPath == chart_path) && (ticket->rect == rect)){
@@ -733,7 +733,7 @@ bool CompressionWorkerPool::StartTopJob()
 {
     //  Is it possible to start another job?
     if(m_njobs_running < m_max_jobs) {
-        wxJobListNode *node = todo_list.GetFirst();
+        JobList::compatibility_iterator node = todo_list.GetFirst();
         if(node){
             JobTicket *ticket = node->GetData();
             todo_list.DeleteNode(node);
@@ -792,7 +792,7 @@ bool CompressionWorkerPool::DoJob(JobTicket* pticket)
 bool CompressionWorkerPool::AsJob( wxString const &chart_path ) const
 {
     if(chart_path.Len()){    
-        wxJobListNode *tnode = running_list.GetFirst();
+        JobList::compatibility_iterator tnode = running_list.GetFirst();
         while(tnode){
             JobTicket *ticket = tnode->GetData();
             if(ticket->m_ChartPath.IsSameAs(chart_path)){
@@ -808,7 +808,7 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
 {
     if(chart_path.Len()){    
         //  Remove all pending jobs relating to the passed chart path
-        wxJobListNode *tnode = todo_list.GetFirst();
+        JobList::compatibility_iterator tnode = todo_list.GetFirst();
         while(tnode){
             JobTicket *ticket = tnode->GetData();
             if(ticket->m_ChartPath.IsSameAs(chart_path)){
@@ -823,7 +823,7 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
             }
         }
 
-        wxJobListNode *node = running_list.GetFirst();
+        JobList::compatibility_iterator node = running_list.GetFirst();
         while(node){
             JobTicket *ticket = node->GetData();
             if(ticket->m_ChartPath.IsSameAs(chart_path)){
@@ -837,7 +837,7 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
             printf("Pool:  Purge, todo count: %lu\n", (long unsigned)todo_list.GetCount());
     }
     else {
-        wxJobListNode *node = todo_list.GetFirst();
+        JobList::compatibility_iterator node = todo_list.GetFirst();
         while(node){
             JobTicket *ticket = node->GetData();
             delete ticket;

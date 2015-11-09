@@ -902,7 +902,7 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 
             wxWindow *pOptions = NULL;
 
-            wxWindowListNode *node = AppActivateList.GetFirst();
+            wxWindowList::compatibility_iterator node = AppActivateList.GetFirst();
             while (node) {
                 wxWindow *win = node->GetData();
                 win->Show();
@@ -2446,7 +2446,7 @@ MyFrame::~MyFrame()
     delete pCurrentStack;
 
 //      Free the Route List
-    wxRouteListNode *node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node = pRouteList->GetFirst();
 
     while( node ) {
         Route *pRouteDelete = node->GetData();
@@ -3157,7 +3157,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
             //    First, delete any single anchorage waypoint closer than 0.25 NM from this point
             //    This will prevent clutter and database congestion....
 
-            wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+            RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
             while( node ) {
                 RoutePoint *pr = node->GetData();
                 if( pr->GetName().StartsWith( _T("Anchorage") ) ) {
@@ -8245,7 +8245,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                     v[i][_T("lon")] = (*itp)->m_lon;
                     v[i][_T("WPName")] = (*itp)->GetName();
                     v[i][_T("WPDescription")] = (*itp)->GetDescription();
-                    wxHyperlinkListNode *node = (*itp)->m_HyperlinkList->GetFirst();
+                    HyperlinkList::compatibility_iterator node = (*itp)->m_HyperlinkList->GetFirst();
                     if(node)
                     {
                         int n = 1;

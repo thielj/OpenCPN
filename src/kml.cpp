@@ -121,7 +121,7 @@ KmlPastebufferType Kml::ParseTrack( TiXmlNode* node, wxString& name ) {
             pointCounter++;
         }
 
-        wxRoutePointListNode* rpNode = parsedTrack->pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator rpNode = parsedTrack->pRoutePointList->GetFirst();
         TiXmlElement* when = node->FirstChildElement( "when" );
 
         wxDateTime whenTime;
@@ -446,7 +446,7 @@ wxString Kml::MakeKmlFromRoute( Route* route, bool insertSeq ) {
     std::stringstream lineStringCoords;
 
     RoutePointList *pointList = route->pRoutePointList;
-    wxRoutePointListNode *pointnode = pointList->GetFirst();
+    RoutePointList::compatibility_iterator pointnode = pointList->GetFirst();
     RoutePoint *routepoint;
 
     while( pointnode ) {
@@ -504,7 +504,7 @@ wxString Kml::MakeKmlFromTrack( Track* track ) {
     std::stringstream lineStringCoords;
 
     RoutePointList *pointList = track->pRoutePointList;
-    wxRoutePointListNode *pointnode = pointList->GetFirst();
+    RoutePointList::compatibility_iterator pointnode = pointList->GetFirst();
     RoutePoint *routepoint;
 
     while( pointnode ) {

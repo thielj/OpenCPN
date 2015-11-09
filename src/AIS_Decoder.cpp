@@ -1866,7 +1866,7 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
 
     time_t test_time = wxDateTime::Now().GetTicks() - (time_t) ( g_AISShowTracks_Mins * 60 );
 
-    wxAISTargetTrackListNode *node = ptarget->m_ptrack->GetFirst();
+    AISTargetTrackList::compatibility_iterator node = ptarget->m_ptrack->GetFirst();
     while( node ) {
         AISTargetTrackPoint *ptrack_point = node->GetData();
 

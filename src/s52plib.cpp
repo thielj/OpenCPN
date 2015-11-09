@@ -1932,7 +1932,7 @@ bool s52plib::CheckTextRectList( const wxRect &test_rect, S52_TextC *ptext )
 {
     //    Iterate over the current object list, looking at rText
 
-    for( TextObjList::Node *node = m_textObjList.GetFirst(); node; node = node->GetNext() ) {
+    for( TextObjList::compatibility_iterator node = m_textObjList.GetFirst(); node; node = node->GetNext() ) {
         wxRect *pcurrent_rect = &( node->GetData()->rText );
 
         if( pcurrent_rect->Intersects( test_rect ) ) {
@@ -2095,7 +2095,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
         if( m_bDeClutterText ) {
             if( bwas_drawn ) {
                 bool b_found = false;
-                for( TextObjList::Node *node = m_textObjList.GetFirst(); node; node =  node->GetNext() ) {
+                for( TextObjList::compatibility_iterator node = m_textObjList.GetFirst(); node; node =  node->GetNext() ) {
                     S52_TextC *oc = node->GetData();
 
                     if( oc == text ) {
@@ -7629,7 +7629,7 @@ void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
     //        1.  Apply the specified offset to the list elements
     //        2.. Remove any list elements that are off screen after applied offset
 
-    TextObjList::Node *node = m_textObjList.GetFirst();
+    TextObjList::compatibility_iterator node = m_textObjList.GetFirst();
     while( node ) {
         wxRect *pcurrent = &( node->GetData()->rText );
         pcurrent->Offset( dx, dy );

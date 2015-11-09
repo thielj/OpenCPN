@@ -589,7 +589,7 @@ ret_point:
             // Send out the waypoints, in order
             if ( bsend_waypoints )
             {
-                wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
+                RoutePointList::compatibility_iterator node = pr->pRoutePointList->GetFirst();
 
                 int ip = 1;
                 while ( node )
@@ -701,7 +701,7 @@ ret_point:
             oNMEA0183.Rte.message_number = 1;
 
             // add the waypoints
-            wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
+            RoutePointList::compatibility_iterator node = pr->pRoutePointList->GetFirst();
             while ( node )
             {
                 RoutePoint *prp = node->GetData();
@@ -758,7 +758,7 @@ ret_point:
                 int sent_len=0;
                 unsigned int wp_count = 0;
 
-                wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
+                RoutePointList::compatibility_iterator node = pr->pRoutePointList->GetFirst();
                 while ( node )
                 {
                     RoutePoint *prp = node->GetData();

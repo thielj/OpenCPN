@@ -342,7 +342,7 @@ public:
     ChartTable    active_chartTable;
     
 protected:
-    virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
+    virtual ChartBase *GetChart(const wxString &theFilePath, ChartClassDescriptor &chart_desc) const;
     int AddChartDirectory(const wxString &theDir, bool bshow_prog);
     void SetValid(bool valid) { bValid = valid; }
     ChartTableEntry *CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc);

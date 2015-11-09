@@ -556,7 +556,7 @@ class MyFrame: public wxFrame
 class MyPrintout: public wxPrintout
 {
  public:
-  MyPrintout(const wxChar *title = _T("My printout")):wxPrintout(title){}
+  MyPrintout(const wxString &title = "My printout"):wxPrintout(title){}
   virtual
   bool OnPrintPage(int page);
   virtual

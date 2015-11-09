@@ -911,7 +911,7 @@ void TrackPropDlg::SetTrackAndUpdate( Route *pR )
     m_pMyLinkList = new HyperlinkList();
     int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
     if( NbrOfLinks > 0 ) {
-        wxHyperlinkListNode *linknode = m_pRoute->m_HyperlinkList->GetFirst();
+        HyperlinkList::compatibility_iterator linknode = m_pRoute->m_HyperlinkList->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
 
@@ -939,7 +939,7 @@ void TrackPropDlg::InitializeList()
         return;
 
     m_lcPoints->m_pRoute = m_pRoute;
-    wxRoutePointListNode *first_point_node = m_pRoute->pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator first_point_node = m_pRoute->pRoutePointList->GetFirst();
     if(first_point_node){
         RoutePoint *prp = first_point_node->GetData();
         if(prp)
@@ -952,7 +952,7 @@ void TrackPropDlg::InitializeList()
         m_lcPoints->SetItemCount( m_pRoute->GetnPoints() );
 
     else{
-        wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator pnode = m_pRoute->pRoutePointList->GetFirst();
         int in = 0;
         while( pnode ) {
             wxListItem item;
@@ -983,7 +983,7 @@ bool TrackPropDlg::UpdateProperties()
     if(m_scrolledWindowLinks){
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-            wxWindowListNode *node = kids.Item( i );
+            wxWindowList::compatibility_iterator node = kids.Item( i );
             wxWindow *win = node->GetData();
 
             if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -999,7 +999,7 @@ bool TrackPropDlg::UpdateProperties()
             HyperlinkList *hyperlinklist = m_pRoute->m_HyperlinkList;
     //            int len = 0;
             if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
                 wxString Link = link->Link;
@@ -1143,7 +1143,7 @@ bool TrackPropDlg::IsThisTrackExtendable()
     RoutePoint *pLastPoint = m_pRoute->GetPoint( 1 );
     if( !pLastPoint->GetCreateTime().IsValid() ) return false;
 
-    wxRouteListNode *route_node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
     while( route_node ) {
         Route *proute = route_node->GetData();
         if( proute->m_bIsTrack && proute->IsVisible() && ( proute->m_GUID != m_pRoute->m_GUID ) ) {
@@ -1300,7 +1300,7 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
 
     m_pRoute->ClearHighlights();
 
-    wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = m_pRoute->pRoutePointList->GetFirst();
     while( node && itemno-- ) {
         node = node->GetNext();
     }
@@ -1358,13 +1358,13 @@ void TrackPropDlg::m_hyperlinkContextMenu( wxMouseEvent &event )
 
 void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
 {
-    wxHyperlinkListNode* nodeToDelete = NULL;
+    HyperlinkList::compatibility_iterator nodeToDelete; // = NULL;
     wxString findurl = m_pEditedLink->GetURL();
     wxString findlabel = m_pEditedLink->GetLabel();
 
     wxWindowList kids = m_scrolledWindowLinks->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowList::compatibility_iterator node = kids.Item( i );
         wxWindow *win = node->GetData();
 
         if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -1381,7 +1381,7 @@ void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
     HyperlinkList *hyperlinklist = m_pRoute->m_HyperlinkList;
 //      int len = 0;
     if( NbrOfLinks > 0 ) {
-        wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
             wxString Link = link->Link;
@@ -1420,7 +1420,7 @@ void TrackPropDlg::OnEditLink( wxCommandEvent& event )
         HyperlinkList *hyperlinklist = m_pRoute->m_HyperlinkList;
 //            int len = 0;
         if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
                 wxString Link = link->Link;
@@ -1589,7 +1589,7 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
     //    (May have been deleted by RouteManagerDialog...)
 
     bool b_found_route = false;
-    wxRouteListNode *node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node = pRouteList->GetFirst();
     while( node ) {
         Route *proute = node->GetData();
 
@@ -1622,7 +1622,7 @@ void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
     //    Look in the route list to be sure the raoute is still available
     //    (May have been deleted by RouteMangerDialog...)
     bool b_found_route = false;
-    wxRouteListNode *node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node = pRouteList->GetFirst();
     while( node ) {
         Route *proute = node->GetData();
 
@@ -1644,8 +1644,8 @@ void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
 //--------------------------------------------------------------------------------------
 //          OCPNTrackListCtrl Implementation
 //---------------------------------------------------------------------------------------
-wxRoutePointListNode    *g_this_point_node;
-wxRoutePointListNode    *g_prev_point_node;
+RoutePointList::compatibility_iterator    g_this_point_node;
+RoutePointList::compatibility_iterator    g_prev_point_node;
 RoutePoint              *g_this_point;
 RoutePoint              *g_prev_point;
 int                     g_prev_point_index;
@@ -1681,7 +1681,7 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             else
                 g_this_point = NULL;
         } else {
-            wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
+            RoutePointList::compatibility_iterator node = m_pRoute->pRoutePointList->GetFirst();
             if( node ) {
                 if( item > 0 ) {
                     int i = 0;
@@ -1699,7 +1699,7 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
                     else
                         g_this_point = NULL;
                 } else {
-                    g_prev_point_node = NULL;
+                    g_prev_point_node = RoutePointList::compatibility_iterator();
                     g_prev_point = NULL;
 
                     g_this_point_node = node;
@@ -1709,9 +1709,9 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
                         g_this_point = NULL;
                 }
             } else {
-                g_prev_point_node = NULL;
+                g_prev_point_node = RoutePointList::compatibility_iterator();
                 g_prev_point = NULL;
-                g_this_point_node = NULL;
+                g_this_point_node = RoutePointList::compatibility_iterator();
                 g_this_point = NULL;
             }
         }

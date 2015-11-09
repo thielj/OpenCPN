@@ -2340,7 +2340,7 @@ bool ChartDatabase::RemoveSingleChart( wxString &ChartFullPath )
 // Create a Chart object
 ///////////////////////////////////////////////////////////////////////
 
-ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const
+ChartBase *ChartDatabase::GetChart(const wxString &theFilePath, ChartClassDescriptor &chart_desc) const
 {
     // TODO: support non-UI chart factory
     return NULL;

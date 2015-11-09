@@ -266,7 +266,7 @@ void Route::AddTentativePoint( const wxString& GUID )
 RoutePoint *Route::GetPoint( int nWhichPoint )
 {
     RoutePoint *prp;
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     int i = 1;
     while( node ) {
@@ -283,7 +283,7 @@ RoutePoint *Route::GetPoint( int nWhichPoint )
 RoutePoint *Route::GetPoint( const wxString &guid )
 {
     RoutePoint *prp;
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     while( node ) {
         prp = node->GetData();
@@ -356,7 +356,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     if ( m_bVisible )
         DrawPointWhich( dc, 1, &rpt1 );
 
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
     RoutePoint *prp1 = node->GetData();
     node = node->GetNext();
 
@@ -454,7 +454,7 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
     wxPoint2DDouble r1;
     wxPoint2DDouble lastpoint;
     
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
     RoutePoint *prp2 = node->GetData();
     cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &lastpoint);
     
@@ -594,7 +594,7 @@ void Route::DrawGL( ViewPort &VP )
         ocpnDC dc;
         dc.SetPen( HiPen );
         
-        wxRoutePointListNode *node = pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
         RoutePoint *prp0 = node->GetData();
         wxPoint r0;
 
@@ -649,7 +649,7 @@ void Route::DrawGL( ViewPort &VP )
             
             //  For tracks, establish colour based on first icon name
             if(m_bIsTrack){
-                wxRoutePointListNode *node = pRoutePointList->GetFirst();
+                RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
                 RoutePoint *prp = node->GetData();
                 
                 if( prp->GetIconName().StartsWith( _T("xmred") ) ) 
@@ -683,7 +683,7 @@ void Route::DrawGL( ViewPort &VP )
     float lastlon = 0;
     float lastlat = 0;
     unsigned short int FromSegNo = 1;
-    for(wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    for(RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
         node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
         unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
@@ -727,7 +727,7 @@ void Route::DrawGL( ViewPort &VP )
 
     /* direction arrows.. could probably be further optimized for opengl */
     if( !m_bIsTrack ) {
-        wxRoutePointListNode *node = pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
         wxPoint rpt1, rpt2;
         while(node) {
             RoutePoint *prp = node->GetData();
@@ -740,7 +740,7 @@ void Route::DrawGL( ViewPort &VP )
     }
 
     /*  Route points  */
-    for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
+    for(RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
         if ( !m_bVisible && prp->m_bKeepXRoute )
             prp->DrawGL( VP );
@@ -879,7 +879,7 @@ void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
 void Route::ClearHighlights( void )
 {
     RoutePoint *prp = NULL;
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     while( node ) {
         prp = node->GetData();
@@ -952,7 +952,7 @@ wxString Route::GetNewMarkSequenced( void )
 RoutePoint *Route::GetLastPoint()
 {
     RoutePoint *data_m1 = NULL;
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     while( node ) {
         data_m1 = node->GetData();
@@ -1042,7 +1042,7 @@ void Route::RemovePoint( RoutePoint *rp, bool bRenamePoints )
 
 void Route::DeSelectRoute()
 {
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     RoutePoint *rp;
     while( node ) {
@@ -1055,7 +1055,7 @@ void Route::DeSelectRoute()
 
 void Route::ReloadRoutePointIcons()
 {
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     RoutePoint *rp;
     while( node ) {
@@ -1084,7 +1084,7 @@ wxBoundingBox Route::GetBBox( void )
     RBBox.Reset();
     m_bcrosses_idl = CalculateCrossesIDL();
 
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
     RoutePoint *data;
 
     if( !m_bcrosses_idl ) {
@@ -1124,8 +1124,8 @@ wxBoundingBox Route::GetBBox( void )
 
 bool Route::CalculateCrossesIDL( void )
 {
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
-    if( NULL == node ) return false;
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
+    if( !node ) return false;
 
     bool idl_cross = false;
     RoutePoint *data = node->GetData();             // first node
@@ -1165,7 +1165,7 @@ void Route::CalculateDCRect( wxDC& dc_route, wxRect *prect, ViewPort &VP )
     // always be fully contained within the resulting rectangle.
     // Can we prove this?
     if( m_bVisible ) {
-        wxRoutePointListNode *node = pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
         while( node ) {
 
             RoutePoint *prp2 = node->GetData();
@@ -1198,7 +1198,7 @@ void Route::UpdateSegmentDistances( double planspeed )
     double route_len = 0.0;
     double route_time = 0.0;
 
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     if( node ) {
         RoutePoint *prp0 = node->GetData();
@@ -1308,7 +1308,7 @@ void Route::RebuildGUIDList( void )
 {
     RoutePointGUIDList.Clear();               // empty the GUID list
 
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     RoutePoint *rp;
     while( node ) {
@@ -1325,7 +1325,7 @@ void Route::SetVisible( bool visible, bool includeWpts )
     if ( !includeWpts )
         return;
 
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
     RoutePoint *rp;
     while( node ) {
         rp = node->GetData();
@@ -1350,7 +1350,7 @@ void Route::AssembleRoute( void )
         wxString GUID = RoutePointGUIDList[ip];
 
         //    And on the RoutePoints themselves
-        wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+        RoutePointList::compatibility_iterator prpnode = pWayPointMan->GetWaypointList()->GetFirst();
         while( prpnode ) {
             RoutePoint *prp = prpnode->GetData();
 
@@ -1368,7 +1368,7 @@ void Route::RenameRoutePoints( void )
     //    iterate on the route points.
     //    If dynamically named, rename according to current list position
 
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
     int i = 1;
     while( node ) {
@@ -1413,17 +1413,17 @@ int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *p
 //    Do all routepoint positions and names match?
 bool Route::IsEqualTo( Route *ptargetroute )
 {
-    wxRoutePointListNode *pthisnode = ( this->pRoutePointList )->GetFirst();
-    wxRoutePointListNode *pthatnode = ( ptargetroute->pRoutePointList )->GetFirst();
+    RoutePointList::compatibility_iterator pthisnode = ( this->pRoutePointList )->GetFirst();
+    RoutePointList::compatibility_iterator pthatnode = ( ptargetroute->pRoutePointList )->GetFirst();
 
-    if( NULL == pthisnode ) return false;
+    if( ! pthisnode ) return false;
 
     if( this->m_bIsInLayer || ptargetroute->m_bIsInLayer ) return false;
 
     if( this->GetnPoints() != ptargetroute->GetnPoints() ) return false;
 
     while( pthisnode ) {
-        if( NULL == pthatnode ) return false;
+        if( ! pthatnode ) return false;
 
         RoutePoint *pthisrp = pthisnode->GetData();
         RoutePoint *pthatrp = pthatnode->GetData();

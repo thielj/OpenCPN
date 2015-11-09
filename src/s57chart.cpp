@@ -6443,7 +6443,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     wxArrayPtrVoid lights;
     S57Light* curLight = NULL;
 
-    for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
+    for( ListOfObjRazRules::compatibility_iterator node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
         ObjRazRules *current = node->GetData();
         positionString.Clear();
         objText.Clear();
@@ -6613,7 +6613,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         // For lights we now have all the info gathered but no HTML output yet, now
         // run through the data and build a merged table for all lights.
 
-        lights.Sort( ( CMPFUNC_wxArraywxArrayPtrVoid )( &s57chart::CompareLights ) );
+        //lights.Sort( ( CMPFUNC_wxArraywxArrayPtrVoid )( &s57chart::CompareLights ) );
+        lights.Sort( (wxArrayPtrVoid::CMPFUNC) &s57chart::CompareLights );
 
         wxString lastPos;
 
@@ -7115,8 +7116,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         int n_attr = 0;
         wxArrayOfS57attVal *attValArray = NULL;
         
-        ListOfObjRazRules::Node *snode = NULL;
-        ListOfPI_S57Obj::Node *pnode = NULL;
+        ListOfObjRazRules::compatibility_iterator snode; // = NULL;
+        ListOfPI_S57Obj::compatibility_iterator pnode; // = NULL;
         
         if(Chs57) 
             snode = rule_list->GetLast();

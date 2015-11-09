@@ -361,14 +361,14 @@ unsigned int OCPNCheckedListCtrl::Append(wxString& label) {
 }
 
 void OCPNCheckedListCtrl::Check(int index, bool val) {
-  CBList::Node* node = m_list.Item(index);
+  CBList::compatibility_iterator node = m_list.Item(index);
   wxCheckBox* cb = node->GetData();
 
   if (cb) cb->SetValue(val);
 }
 
 bool OCPNCheckedListCtrl::IsChecked(int index) {
-  CBList::Node* node = m_list.Item(index);
+  CBList::compatibility_iterator node = m_list.Item(index);
   wxCheckBox* cb = node->GetData();
 
   if (cb)
@@ -512,7 +512,7 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_MMSICtl->GetValue().ToLong(&nmmsi);
     m_props->MMSI = nmmsi;
 
-    if (strlen(m_MMSICtl->GetValue()) != 9)
+    if (m_MMSICtl->GetValue().length() != 9)
     {
         if (wxID_CANCEL == OCPNMessageBox(this,
             _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."),

@@ -31,9 +31,13 @@
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
 #include "gpxdocument.h"
+#include "SelectItem.h"
 
 class ocpnDC;
 class wxDC;
+class RoutePoint;
+
+WX_DECLARE_LIST(RoutePoint, RoutePointList);// establish class as list member
 
 class RoutePoint
 {
@@ -67,11 +71,11 @@ public:
       wxBitmap *GetIconBitmap(){ return m_pbmIcon; }
       void SetIconName( wxString name ){ m_IconName = name; }
       
-      void *GetSelectNode(void) { return m_SelectNode; }
-      void SetSelectNode(void* node) { m_SelectNode = node; }
+      SelectableItemList::compatibility_iterator GetSelectNode(void) { return m_SelectNode; }
+      void SetSelectNode(SelectableItemList::compatibility_iterator node) { m_SelectNode = node; }
 
-      void *GetManagerListNode(void) { return m_ManagerNode; }
-      void SetManagerListNode(void* node) { m_ManagerNode = node; }
+      RoutePointList::compatibility_iterator GetManagerListNode(void) { return m_ManagerNode; }
+      void SetManagerListNode(RoutePointList::compatibility_iterator node) { m_ManagerNode = node; }
       
       void SetName(const wxString & name);
       void CalculateNameExtents(void);
@@ -171,11 +175,10 @@ private:
       wxBitmap          *m_pbmIcon;
       wxString          m_IconName;
       
-      void              *m_SelectNode;
-      void              *m_ManagerNode;
+      SelectableItemList::compatibility_iterator        m_SelectNode;
+      RoutePointList::compatibility_iterator            m_ManagerNode;
       
 };
 
-WX_DECLARE_LIST(RoutePoint, RoutePointList);// establish class as list member
 
 #endif

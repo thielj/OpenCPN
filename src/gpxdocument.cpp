@@ -212,7 +212,7 @@ GpxRootElement::GpxRootElement(const wxString &creator, GpxMetadataElement *meta
       SetAttribute( "xsi:schemaLocation", "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" );
       SetMetadata(metadata);
       if (waypoints) {
-            wxListOfGpxWptsNode *waypoint = waypoints->GetFirst();
+            ListOfGpxWpts::compatibility_iterator waypoint = waypoints->GetFirst();
             while (waypoint)
             {
                   AddWaypoint(waypoint->GetData());
@@ -220,7 +220,7 @@ GpxRootElement::GpxRootElement(const wxString &creator, GpxMetadataElement *meta
             }
       }
       if (routes) {
-            wxListOfGpxRoutesNode *route = routes->GetFirst();
+            ListOfGpxRoutes::compatibility_iterator route = routes->GetFirst();
             while (route)
             {
                   AddRoute(route->GetData());
@@ -228,7 +228,7 @@ GpxRootElement::GpxRootElement(const wxString &creator, GpxMetadataElement *meta
             }
       }
       if (tracks) {
-            wxListOfGpxTracksNode *track = tracks->GetFirst();
+            ListOfGpxTracks::compatibility_iterator track = tracks->GetFirst();
             while (track)
             {
                   AddTrack(track->GetData());
@@ -448,7 +448,7 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
       if (!src.IsEmpty())
             SetProperty(wxString(_T("src")), src);
       if (links) {
-            wxListOfGpxLinksNode *link = links->GetFirst();
+            ListOfGpxLinks::compatibility_iterator link = links->GetFirst();
             while (link)
             {
                   LinkEndChild(link->GetData());
@@ -572,7 +572,7 @@ GpxRteElement::GpxRteElement(const wxString &name, const wxString &cmt, const wx
             SetProperty(wxString(_T("src")), src);
       if (links)
       {
-            wxListOfGpxLinksNode *link = links->GetFirst();
+            ListOfGpxLinks::compatibility_iterator link = links->GetFirst();
             while (link)
             {
                   LinkEndChild(link->GetData());
@@ -586,7 +586,7 @@ GpxRteElement::GpxRteElement(const wxString &name, const wxString &cmt, const wx
       if (extensions)
             LinkEndChild(extensions);
       if (waypoints) {
-            wxListOfGpxWptsNode *wpt = waypoints->GetFirst();
+            ListOfGpxWpts::compatibility_iterator wpt = waypoints->GetFirst();
             while (wpt)
             {
                   //TODO: Here we should check whether the waypoint is a *rtept*
@@ -647,7 +647,7 @@ GpxTrkElement::GpxTrkElement(const wxString &name, const wxString &cmt, const wx
             SetProperty(wxString(_T("src")), src);
       if (links)
       {
-            wxListOfGpxLinksNode *link = links->GetFirst();
+            ListOfGpxLinks::compatibility_iterator link = links->GetFirst();
             while (link)
             {
                   LinkEndChild(link->GetData());
@@ -662,7 +662,7 @@ GpxTrkElement::GpxTrkElement(const wxString &name, const wxString &cmt, const wx
             LinkEndChild(extensions);
       if (segments)
       {
-            wxListOfGpxTrksegsNode *seg = segments->GetFirst();
+            ListOfGpxTrksegs::compatibility_iterator seg = segments->GetFirst();
             while (seg)
             {
                   AppendTrkSegment(seg->GetData());
@@ -704,7 +704,7 @@ void GpxTrkElement::SetProperty(const wxString &name, const wxString &value)
 GpxTrksegElement::GpxTrksegElement(ListOfGpxWpts *waypoints, GpxExtensionsElement *extensions) : TiXmlElement("trkseg")
 {
       if (waypoints) {
-            wxListOfGpxWptsNode *wpt = waypoints->GetFirst();
+            ListOfGpxWpts::compatibility_iterator wpt = waypoints->GetFirst();
             while (wpt)
             {
                   //TODO: Here we should check whether the waypoint is a *trkpt*

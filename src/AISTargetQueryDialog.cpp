@@ -144,7 +144,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                 Track *t = new Track();
 
                 t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
-                wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+                AISTargetTrackList::compatibility_iterator node = td->m_ptrack->GetFirst();
                 while( node )
                 {
                     AISTargetTrackPoint *ptrack_point = node->GetData();

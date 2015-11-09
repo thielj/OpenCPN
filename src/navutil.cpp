@@ -484,7 +484,7 @@ Track *Track::DoExtendDaily()
 
     RoutePoint *pLastPoint = this->GetPoint( 1 );
 
-    wxRouteListNode *route_node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
     while( route_node ) {
         Route *proute = route_node->GetData();
 
@@ -554,7 +554,7 @@ void Track::OnTimerTrack( wxTimerEvent& event )
         if( ( trackPointState == firstPoint ) && !g_bTrackDaily )
         {
             wxDateTime now = wxDateTime::Now();
-            wxRoutePointListNode *node = pRoutePointList->GetFirst();
+            RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
             if(node)
                 node->GetData()->SetCreateTime(now.ToUTC());
         }
@@ -703,7 +703,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
     unsigned short int FromSegNo = 1;
 
 
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
     RoutePoint *prp = node->GetData();
 
     //  Establish basic colour
@@ -825,9 +825,9 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
 {
 
     Route *route = new Route();
-    wxRoutePointListNode *prpnode = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator prpnode = pRoutePointList->GetFirst();
     RoutePoint *pWP_src = prpnode->GetData();
-    wxRoutePointListNode *prpnodeX;
+    RoutePointList::compatibility_iterator prpnodeX;
     RoutePoint *pWP_dst;
     RoutePoint *prp_OK = NULL;  // last routepoint known not to exceed xte limit, if not yet added
 
@@ -922,13 +922,13 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
 
                 pWP_src = pWP_dst;
                 next_ic = 0;
-                prpnodeX = NULL;
+                prpnodeX = RoutePointList::compatibility_iterator();
                 prp_OK = NULL;
             }
 
             if( prpnodeX ) prpnodeX = prpnodeX->GetPrevious();
             if( back_ic-- <= 0 ) {
-                prpnodeX = NULL;
+                prpnodeX = RoutePointList::compatibility_iterator();
             }
         }
 
@@ -993,7 +993,7 @@ void Track::DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int
 
 int Track::Simplify( double maxDelta ) {
     int reduction = 0;
-    wxRoutePointListNode *pointnode = pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator pointnode = pRoutePointList->GetFirst();
     RoutePoint *routepoint;
     std::vector<RoutePoint*> pointlist;
 
@@ -3089,7 +3089,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         //WPTs
         int ic = 0;
 
-        wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+        RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
         RoutePoint *pr;
         while( node ) {
             if(pprog) {
@@ -3116,7 +3116,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
             node = node->GetNext();
         }
         //RTEs and TRKs
-        wxRouteListNode *node1 = pRouteList->GetFirst();
+        RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
         while( node1 ) {
             Route *pRoute = node1->GetData();
 
@@ -3260,7 +3260,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 {
     RoutePoint *pret = NULL;
 //    if( g_bIsNewLayer ) return NULL;
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
     bool Exists = false;
     while( node ) {
         RoutePoint *pr = node->GetData();
@@ -3282,7 +3282,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 
 RoutePoint *WaypointExists( const wxString& guid )
 {
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
     while( node ) {
         RoutePoint *pr = node->GetData();
 
@@ -3301,12 +3301,12 @@ bool WptIsInRouteList( RoutePoint *pr )
 {
     bool IsInList = false;
 
-    wxRouteListNode *node1 = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
     while( node1 ) {
         Route *pRoute = node1->GetData();
         RoutePointList *pRoutePointList = pRoute->pRoutePointList;
 
-        wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator node2 = pRoutePointList->GetFirst();
         RoutePoint *prp;
 
         while( node2 ) {
@@ -3326,7 +3326,7 @@ bool WptIsInRouteList( RoutePoint *pr )
 
 Route *RouteExists( const wxString& guid )
 {
-    wxRouteListNode *route_node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
 
     while( route_node ) {
         Route *proute = route_node->GetData();
@@ -3340,7 +3340,7 @@ Route *RouteExists( const wxString& guid )
 
 Route *RouteExists( Route * pTentRoute )
 {
-    wxRouteListNode *route_node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
     while( route_node ) {
         Route *proute = route_node->GetData();
 
@@ -3376,10 +3376,12 @@ wxString FormatGPXDateTime( wxDateTime dt )
 // For example, 2010-10-30T14:34:56Z and 2010-10-30T14:34:56-04:00
 // are the same time. The first is UTC and the second is EDT.
 
-const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime )
+const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxString &datetimeString )
 {
     long sign, hrs_west, mins_west;
     const wxChar *end;
+
+    const wxChar* datetime = datetimeString.wc_str();
 
     // Skip any leading whitespace
     while( isspace( *datetime ) )

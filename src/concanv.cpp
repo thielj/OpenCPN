@@ -333,7 +333,7 @@ void ConsoleCanvas::UpdateRouteData()
                 float trng = rng;
 
                 Route *prt = g_pRouteMan->GetpActiveRoute();
-                wxRoutePointListNode *node = ( prt->pRoutePointList )->GetFirst();
+                RoutePointList::compatibility_iterator node = ( prt->pRoutePointList )->GetFirst();
                 RoutePoint *prp;
 
                 int n_addflag = 0;

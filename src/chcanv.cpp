@@ -2309,7 +2309,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 
         SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
                                      SELTYPE_ROUTESEGMENT );
-        wxSelectableItemListNode *node = SelList.GetFirst();
+        SelectableItemList::compatibility_iterator node = SelList.GetFirst();
         while( node ) {
             SelectItem *pFindSel = node->GetData();
 
@@ -2358,7 +2358,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     // leg end point.
 
                     if( segShow_point_a != pr->pRoutePointList->GetFirst()->GetData() ) {
-                        wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst()->GetNext();
+                        RoutePointList::compatibility_iterator node = (pr->pRoutePointList)->GetFirst()->GetNext();
                         RoutePoint *prp;
                         float dist_to_endleg = 0;
                         wxString t;
@@ -4625,7 +4625,7 @@ void ChartCanvas::FindRoutePointsAtCursor( float selectRadius, bool setBeingEdit
     SelectItem *pFind = NULL;
     SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
                                  SELTYPE_ROUTEPOINT );
-    wxSelectableItemListNode *node = SelList.GetFirst();
+    SelectableItemList::compatibility_iterator node = SelList.GetFirst();
     while( node ) {
         pFind = node->GetData();
 
@@ -4944,7 +4944,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         }
         
         SelectableItemList rpSelList = pSelect->FindSelectionList( zlat, zlon, SELTYPE_ROUTEPOINT );
-        wxSelectableItemListNode *node = rpSelList.GetFirst();
+        SelectableItemList::compatibility_iterator node = rpSelList.GetFirst();
         bool b_onRPtarget = false;
         while( node ) {
             SelectItem *pFind = node->GetData();
@@ -5278,7 +5278,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 SelectItem *pFind = NULL;
                 SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
                                                                          +                                 SELTYPE_ROUTEPOINT );
-                wxSelectableItemListNode *node = SelList.GetFirst();
+                SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                 while( node ) {
                     pFind = node->GetData();
                     RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
@@ -5770,7 +5770,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             if(!b_start_rollover && !b_startedit_route){
                 SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
                                                                          SELTYPE_ROUTESEGMENT );
-                wxSelectableItemListNode *node = SelList.GetFirst();
+                SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                 while( node ) {
                     SelectItem *pFindSel = node->GetData();
                     
@@ -6023,7 +6023,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 //There is at least one routepoint, so get the whole list
                 SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
                                                                          SELTYPE_ROUTEPOINT );
-                wxSelectableItemListNode *node = SelList.GetFirst();
+                SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                 while( node ) {
                     SelectItem *pFindSel = node->GetData();
                     
@@ -6115,7 +6115,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 if( NULL == m_pSelectedRoute )  // the case where a segment only is selected
                 {
                     //  Choose the first visible route containing segment in the list
-                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                     while( node ) {
                         SelectItem *pFindSel = node->GetData();
                         
@@ -6155,7 +6155,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                                          SELTYPE_TRACKSEGMENT );
                 
                 //  Choose the first visible track containing segment in the list
-                wxSelectableItemListNode *node = SelList.GetFirst();
+                SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                 while( node ) {
                     SelectItem *pFindSel = node->GetData();
                     
@@ -6186,7 +6186,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                                                m_cursor_lon, SELTYPE_CURRENTPOINT );
                     
                     //      Default is first entry
-                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                     pFind = node->GetData();
                     pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
                     
@@ -6203,7 +6203,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             node = node->GetNext();
                         }       // while (node)
                     } else {
-                        wxSelectableItemListNode *node = SelList.GetFirst();
+                        SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                         pFind = node->GetData();
                         pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
                     }
@@ -6502,7 +6502,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
 
         SelectableItemList rpSelList = pSelect->FindSelectionList( zlat, zlon, SELTYPE_ROUTEPOINT );
-        wxSelectableItemListNode *node = rpSelList.GetFirst();
+        SelectableItemList::compatibility_iterator node = rpSelList.GetFirst();
         bool b_onRPtarget = false;
         while( node ) {
             SelectItem *pFind = node->GetData();
@@ -6942,7 +6942,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 SelectItem *pFind = NULL;
                 SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
                                                                                          +                                 SELTYPE_ROUTEPOINT );
-                wxSelectableItemListNode *node = SelList.GetFirst();
+                SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                 while( node ) {
                     pFind = node->GetData();
                     RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
@@ -7408,7 +7408,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if(!b_start_rollover && !b_startedit_route){
                     SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
                                                                              SELTYPE_ROUTESEGMENT );
-                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                     while( node ) {
                         SelectItem *pFindSel = node->GetData();
                         
@@ -7696,7 +7696,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 //There is at least one routepoint, so get the whole list
                 SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
                                              SELTYPE_ROUTEPOINT );
-                wxSelectableItemListNode *node = SelList.GetFirst();
+                SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                 while( node ) {
                     SelectItem *pFindSel = node->GetData();
 
@@ -7788,7 +7788,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( NULL == m_pSelectedRoute )  // the case where a segment only is selected
                 {
                     //  Choose the first visible route containing segment in the list
-                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                     while( node ) {
                         SelectItem *pFindSel = node->GetData();
 
@@ -7828,7 +7828,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                                              SELTYPE_TRACKSEGMENT );
 
                 //  Choose the first visible track containing segment in the list
-                wxSelectableItemListNode *node = SelList.GetFirst();
+                SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                 while( node ) {
                     SelectItem *pFindSel = node->GetData();
 
@@ -7859,7 +7859,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                                                  m_cursor_lon, SELTYPE_CURRENTPOINT );
 
                     //      Default is first entry
-                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                     pFind = node->GetData();
                     pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
 
@@ -7876,7 +7876,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             node = node->GetNext();
                         }       // while (node)
                     } else {
-                        wxSelectableItemListNode *node = SelList.GetFirst();
+                        SelectableItemList::compatibility_iterator node = SelList.GetFirst();
                         pFind = node->GetData();
                         pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
                     }
@@ -8357,7 +8357,7 @@ void pupHandler_PasteRoute() {
     // If all waypoints exist since before, and a route with the same name, we don't create a new route.
     if( mergepoints && answer==wxID_YES && existingWaypointCounter==pasted->GetnPoints() ) {
 
-        wxRouteListNode *route_node = pRouteList->GetFirst();
+        RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
         while( route_node ) {
             Route *proute = route_node->GetData();
 
@@ -10059,7 +10059,7 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
         wxDCClipper( *pdc, clipregion );
     }
 
-    wxRouteListNode *node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node = pRouteList->GetFirst();
     while( node ) {
         bool b_run = false;
         bool b_drawn = false;
@@ -10146,7 +10146,7 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
     if(!pWayPointMan)
         return;
 
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
 
     while( node ) {
         RoutePoint *pWP = node->GetData();
@@ -10173,7 +10173,7 @@ void ChartCanvas::DrawBlinkObjects( void )
     if(!pWayPointMan)
         return;
 
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
     
     while( node ) {
         RoutePoint *pWP = node->GetData();
@@ -11323,7 +11323,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
 
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowList::compatibility_iterator node = kids.Item( i );
         wxWindow *win = node->GetData();
 
         if( win->IsKindOf( CLASSINFO(wxListBox) ) )

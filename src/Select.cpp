@@ -58,7 +58,7 @@ bool Select::AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoute
     pSelItem->m_bIsSelected = false;
     pSelItem->m_pData1 = pRoutePointAdd;
 
-    wxSelectableItemListNode *node;
+    SelectableItemList::compatibility_iterator node;
     
     if( pRoutePointAdd->m_bIsInLayer )
         node = pSelectList->Append( pSelItem );
@@ -96,7 +96,7 @@ bool Select::DeleteAllSelectableRouteSegments( Route *pr )
     SelectItem *pFindSel;
 
 //    Iterate on the select list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
@@ -127,7 +127,7 @@ bool Select::DeleteAllSelectableRoutePoints( Route *pr )
     SelectItem *pFindSel;
 
 //    Iterate on the select list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
@@ -135,14 +135,14 @@ bool Select::DeleteAllSelectableRoutePoints( Route *pr )
             RoutePoint *ps = (RoutePoint *) pFindSel->m_pData1;
 
             //    inner loop iterates on the route's point list
-            wxRoutePointListNode *pnode = ( pr->pRoutePointList )->GetFirst();
+            RoutePointList::compatibility_iterator pnode = ( pr->pRoutePointList )->GetFirst();
             while( pnode ) {
                 RoutePoint *prp = pnode->GetData();
 
                 if( prp == ps ) {
                     delete pFindSel;
                     pSelectList->DeleteNode( node );   //delete node;
-                    prp->SetSelectNode( NULL );
+                    prp->SetSelectNode( SelectableItemList::compatibility_iterator() );
                     
                     node = pSelectList->GetFirst();
 
@@ -161,7 +161,7 @@ got_next_outer_node: continue;
 bool Select::AddAllSelectableRoutePoints( Route *pr )
 {
     if( pr->pRoutePointList->GetCount() ) {
-        wxRoutePointListNode *node = ( pr->pRoutePointList )->GetFirst();
+        RoutePointList::compatibility_iterator node = ( pr->pRoutePointList )->GetFirst();
 
         while( node ) {
             RoutePoint *prp = node->GetData();
@@ -179,7 +179,7 @@ bool Select::AddAllSelectableRouteSegments( Route *pr )
     float slat1, slon1, slat2, slon2;
 
     if( pr->pRoutePointList->GetCount() ) {
-        wxRoutePointListNode *node = ( pr->pRoutePointList )->GetFirst();
+        RoutePointList::compatibility_iterator node = ( pr->pRoutePointList )->GetFirst();
 
         RoutePoint *prp0 = node->GetData();
         slat1 = prp0->m_lat;
@@ -211,7 +211,7 @@ bool Select::AddAllSelectableTrackSegments( Route *pr )
     float slat1, slon1, slat2, slon2;
 
     if( pr->pRoutePointList->GetCount() ) {
-        wxRoutePointListNode *node = ( pr->pRoutePointList )->GetFirst();
+        RoutePointList::compatibility_iterator node = ( pr->pRoutePointList )->GetFirst();
 
         RoutePoint *prp0 = node->GetData();
         slat1 = prp0->m_lat;
@@ -243,7 +243,7 @@ bool Select::UpdateSelectableRouteSegments( RoutePoint *prp )
     bool ret = false;
 
 //    Iterate on the select list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
@@ -299,18 +299,18 @@ bool Select::DeleteSelectablePoint( void *pdata, int SeltypeToDelete )
 
     if( NULL != pdata ) {
 //    Iterate on the list
-        wxSelectableItemListNode *node = pSelectList->GetFirst();
+        SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
         while( node ) {
             pFindSel = node->GetData();
             if( pFindSel->m_seltype == SeltypeToDelete ) {
                 if( pdata == pFindSel->m_pData1 ) {
                     delete pFindSel;
-                    delete node;
+                    pSelectList->DeleteNode(node); //delete node;
                     
                     if( SELTYPE_ROUTEPOINT == SeltypeToDelete ){
                         RoutePoint *prp = (RoutePoint *)pdata;
-                        prp->SetSelectNode( NULL );
+                        prp->SetSelectNode( SelectableItemList::compatibility_iterator() );
                     }
                     
                     return true;
@@ -327,16 +327,16 @@ bool Select::DeleteAllSelectableTypePoints( int SeltypeToDelete )
     SelectItem *pFindSel;
 
 //    Iterate on the list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
         if( pFindSel->m_seltype == SeltypeToDelete ) {
-            delete node;
+            pSelectList->DeleteNode(node); //delete node;
             
             if( SELTYPE_ROUTEPOINT == SeltypeToDelete ){
                 RoutePoint *prp = (RoutePoint *)pFindSel->m_pData1;
-                prp->SetSelectNode( NULL );
+                prp->SetSelectNode( SelectableItemList::compatibility_iterator() );
             }
             delete pFindSel;
             
@@ -354,13 +354,13 @@ bool Select::DeleteSelectableRoutePoint( RoutePoint *prp )
 {
     
     if( NULL != prp ) {
-        wxSelectableItemListNode *node = (wxSelectableItemListNode *)prp->GetSelectNode();
+        SelectableItemList::compatibility_iterator node = prp->GetSelectNode();
         if(node){
             SelectItem *pFindSel = node->GetData();
             if(pFindSel){
                 delete pFindSel;
-                delete node;            // automatically removes from list
-                prp->SetSelectNode( NULL );
+                pSelectList->DeleteNode(node); //delete node;            // automatically removes from list
+                prp->SetSelectNode( SelectableItemList::compatibility_iterator() );
                 return true;
             }
         }
@@ -377,7 +377,7 @@ bool Select::ModifySelectablePoint( float lat, float lon, void *data, int Seltyp
     SelectItem *pFindSel;
 
 //    Iterate on the list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
@@ -420,7 +420,7 @@ bool Select::DeleteAllSelectableTrackSegments( Route *pr )
     SelectItem *pFindSel;
 
 //    Iterate on the select list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
@@ -445,7 +445,7 @@ bool Select::DeletePointSelectableTrackSegments( RoutePoint *pr )
     SelectItem *pFindSel;
 
 //    Iterate on the select list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
@@ -529,7 +529,7 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
     CalcSelectRadius();
 
 //    Iterate on the list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();
@@ -588,7 +588,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
     CalcSelectRadius();
 
 //    Iterate on the list
-    wxSelectableItemListNode *node = pSelectList->GetFirst();
+    SelectableItemList::compatibility_iterator node = pSelectList->GetFirst();
 
     while( node ) {
         pFindSel = node->GetData();

@@ -1366,7 +1366,7 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
 
     m_pRoute->ClearHighlights();
 
-    wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node = m_pRoute->pRoutePointList->GetFirst();
     while( node && itemno-- ) {
         node = node->GetNext();
     }
@@ -1573,7 +1573,7 @@ void RouteProp::InitializeList()
         m_pRoute->UpdateSegmentDistances( m_planspeed );           // to fix ETD properties
 
         //  Iterate on Route Points, inserting blank fields starting with index 0
-        wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator pnode = m_pRoute->pRoutePointList->GetFirst();
         int in = 0;
         while( pnode ) {
             m_wpList->InsertItem( in, _T(""), -1 );
@@ -1788,7 +1788,7 @@ bool RouteProp::UpdateProperties()
             m_TimeEnrouteCtl->Clear();
 
         //  Iterate on Route Points
-        wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
+        RoutePointList::compatibility_iterator node = m_pRoute->pRoutePointList->GetFirst();
 
         int i = 0;
         double slat = gLat;
@@ -1868,7 +1868,7 @@ bool RouteProp::UpdateProperties()
 
         // calculation of course at current WayPoint.
         double course=10, tmp_leg_dist=23;
-        wxRoutePointListNode *next_node = node->GetNext();
+        RoutePointList::compatibility_iterator next_node = node->GetNext();
         RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
         if (_next_prp )
         {
@@ -2217,7 +2217,7 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
     //    (May have been deleted by RouteMangerDialog...)
 
     bool b_found_route = false;
-    wxRouteListNode *node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node = pRouteList->GetFirst();
     while( node ) {
         Route *proute = node->GetData();
 
@@ -2244,7 +2244,7 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     //    (May have been deleted by RouteManagerDialog...)
 
     bool b_found_route = false;
-    wxRouteListNode *node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node = pRouteList->GetFirst();
     while( node ) {
         Route *proute = node->GetData();
 
@@ -2922,7 +2922,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 //        m_bitmapIcon->SetBitmap( *m_pRoutePoint->GetIconBitmap() );
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-            wxWindowListNode *node = kids.Item( i );
+            wxWindowList::compatibility_iterator node = kids.Item( i );
             wxWindow *win = node->GetData();
 
             if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -2963,7 +2963,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
 //            int len = 0;
         if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
                 wxString Link = link->Link;
@@ -3051,7 +3051,7 @@ void MarkInfoImpl::SetRoutePoint( RoutePoint *pRP )
         int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
 //            int len = 0;
         if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = m_pRoutePoint->m_HyperlinkList->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = m_pRoutePoint->m_HyperlinkList->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
 
@@ -3079,13 +3079,13 @@ void MarkInfoImpl::m_hyperlinkContextMenu( wxMouseEvent &event )
 
 void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
 {
-    wxHyperlinkListNode* nodeToDelete = NULL;
+    HyperlinkList::compatibility_iterator nodeToDelete;
     wxString findurl = m_pEditedLink->GetURL();
     wxString findlabel = m_pEditedLink->GetLabel();
     
     wxWindowList kids = m_scrolledWindowLinks->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowList::compatibility_iterator node = kids.Item( i );
         wxWindow *win = node->GetData();
         win->Hide();    
     }
@@ -3095,7 +3095,7 @@ void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
     HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
 //      int len = 0;
     if( NbrOfLinks > 0 ) {
-        wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
             wxString Link = link->Link;
@@ -3139,7 +3139,7 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
         HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
 //            int len = 0;
         if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
                 wxString Link = link->Link;
@@ -3362,7 +3362,7 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
 
         int NbrOfLinks = m_pMyLinkList->GetCount();
         if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = m_pMyLinkList->GetFirst();
+            HyperlinkList::compatibility_iterator linknode = m_pMyLinkList->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
                 Hyperlink* h = new Hyperlink();
@@ -3525,7 +3525,7 @@ void MarkInfoImpl::ValidateMark( void )
 {
     //    Look in the master list of Waypoints to see if the currently selected waypoint is still valid
     //    It may have been deleted as part of a route
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node = pWayPointMan->GetWaypointList()->GetFirst();
 
     bool b_found = false;
     while( node ) {
