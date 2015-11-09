@@ -57,7 +57,6 @@
 #include "glChartCanvas.h"
 #endif
 
-
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -88,7 +87,7 @@ extern PlugInManager    *g_pi_manager;
 extern float            g_GLMinSymbolLineWidth;
 
 extern bool  g_b_EnableVBO;
-extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+extern GLEXT::PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 
 // TODO  These should be gotten from the ctor
 extern MyFrame          *gFrame;

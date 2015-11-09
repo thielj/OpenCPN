@@ -31,6 +31,8 @@
 
 #include "LLRegion.h"
 
+#include "opengl.h"
+
 static inline double cross(const contour_pt &v1, const contour_pt &v2)
 {
     return v1.y*v2.x - v1.x*v2.y;

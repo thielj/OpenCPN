@@ -30,14 +30,10 @@
 
 #include <stdint.h>
 
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
-#include "GL/gl.h"
+#include "glChartCanvas.h"
+#include "opengl.h"
 #ifdef __WXMSW__ // because gl.h includes windows.h which defines symbols that conflict with wx
 #include <wx/msw/winundef.h>
-#endif
 #endif
 
 #include "viewport.h"
@@ -45,7 +41,6 @@
 #include "glTextureDescriptor.h"
 
 #include "chcanv.h"
-#include "glChartCanvas.h"
 #include "chartbase.h"
 #include "chartimg.h"
 #include "chartdb.h"
@@ -88,7 +83,7 @@ static wxMutex 		s_MutexPool;
 
 extern PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
+extern GLEXT::PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
 extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 
 bool bthread_debug;

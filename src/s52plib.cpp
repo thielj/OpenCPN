@@ -34,6 +34,11 @@
 #include <math.h>
 #include <stdlib.h>
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#include "opengl.h"
+#endif
+
 #include "dychart.h"
 #include "georef.h"
 
@@ -54,16 +59,6 @@
 #include <wx/image.h>
 #include <wx/tokenzr.h>
 
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
-#include "GL/gl.h"
-#endif
-
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -82,10 +77,10 @@ extern bool    g_oz_vector_scale;
 extern bool g_bresponsive;
 extern float g_ChartScaleFactorExp;
 
-extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
-extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
-extern PFNGLBUFFERDATAPROC                 s_glBufferData;
-extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+extern GLEXT::PFNGLGENBUFFERSPROC                 s_glGenBuffers;
+extern GLEXT::PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+extern GLEXT::PFNGLBUFFERDATAPROC                 s_glBufferData;
+extern GLEXT::PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
@@ -6446,7 +6441,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
         TriPrim *p_tp = ppg->tri_prim_head;
-        GLintptr vbo_offset = 0;
+        GLEXT::GLintptr vbo_offset = 0;
         
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 

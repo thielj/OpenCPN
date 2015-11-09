@@ -878,6 +878,7 @@ IF(OPENGL_FOUND)
                    include/glTextureDescriptor.h
                    include/glTexCache.h
                    include/TexFont.h
+                   include/opengl.h
         )
   SET(SRCS ${SRCS} src/glChartCanvas.cpp
                    src/glTextureDescriptor.cpp

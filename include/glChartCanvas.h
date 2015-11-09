@@ -26,13 +26,14 @@
 #define __GLCHARTCANVAS_H__
 
 #include <wx/glcanvas.h>
+#include "opengl.h"
 #include "ocpn_types.h"
 #include "OCPNRegion.h"
 #include "LLRegion.h"
 #include "viewport.h"
 #include "TexFont.h"
 
- #define FORMAT_BITS           GL_RGB
+#define FORMAT_BITS           GL_RGB
 
 #ifdef __OCPN__ANDROID__
 #include "wx/qt/private/wxQtGesture.h"

@@ -54,14 +54,7 @@ private:
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
-
-#include <qopengl.h>
-#include "GL/gl_private.h"
-
-#else
-#include "GL/gl.h"
 #endif
-
 
 #include "glChartCanvas.h"
 #include "chcanv.h"
@@ -195,27 +188,27 @@ ocpnGLOptions g_GLOptions;
 bool         g_b_EnableVBO;
 
 
-PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
-PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffers;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    s_glFramebufferTexture2D;
-PFNGLBINDFRAMEBUFFEREXTPROC         s_glBindFramebuffer;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbuffer;
-PFNGLRENDERBUFFERSTORAGEEXTPROC     s_glRenderbufferStorage;
-PFNGLBINDRENDERBUFFEREXTPROC        s_glBindRenderbuffer;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatus;
-PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffers;
-PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffers;
+GLEXT::PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
+GLEXT::PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffers;
+GLEXT::PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    s_glFramebufferTexture2D;
+GLEXT::PFNGLBINDFRAMEBUFFEREXTPROC         s_glBindFramebuffer;
+GLEXT::PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbuffer;
+GLEXT::PFNGLRENDERBUFFERSTORAGEEXTPROC     s_glRenderbufferStorage;
+GLEXT::PFNGLBINDRENDERBUFFEREXTPROC        s_glBindRenderbuffer;
+GLEXT::PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatus;
+GLEXT::PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffers;
+GLEXT::PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffers;
 
-PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
+GLEXT::PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
 
 PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 
 //      Vertex Buffer Object (VBO) support
-PFNGLGENBUFFERSPROC                 s_glGenBuffers;
-PFNGLBINDBUFFERPROC                 s_glBindBuffer;
-PFNGLBUFFERDATAPROC                 s_glBufferData;
-PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+GLEXT::PFNGLGENBUFFERSPROC                 s_glGenBuffers;
+GLEXT::PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+GLEXT::PFNGLBUFFERDATAPROC                 s_glBufferData;
+GLEXT::PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
 #include <wx/arrimpl.cpp>
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
@@ -673,8 +666,10 @@ typedef void (*GenericFunction)(void);
 #include <dlfcn.h>
 #define systemGetProcAddress(ADDR) dlsym( RTLD_DEFAULT, ADDR)
 #elif defined(__OCPN__ANDROID__)
+// EGL/egl.h
 #define systemGetProcAddress(ADDR) eglGetProcAddress(ADDR)
 #else
+// GL/glx.h
 #define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
 #endif
 
@@ -729,41 +724,41 @@ static void GetglEntryPoints( void )
 
     unsigned int i;
     for(i=0; i<n_ext; i++) {
-        if((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
+        if((s_glGenFramebuffers = (GLEXT::PFNGLGENFRAMEBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
             break;
     }
 
     if(i<n_ext){
-        s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
+        s_glGenRenderbuffers = (GLEXT::PFNGLGENRENDERBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
-        s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
+        s_glFramebufferTexture2D = (GLEXT::PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
             ocpnGetProcAddress( "glFramebufferTexture2D", extensions[i]);
-        s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)
+        s_glBindFramebuffer = (GLEXT::PFNGLBINDFRAMEBUFFEREXTPROC)
             ocpnGetProcAddress( "glBindFramebuffer", extensions[i]);
-        s_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
+        s_glFramebufferRenderbuffer = (GLEXT::PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
             ocpnGetProcAddress( "glFramebufferRenderbuffer", extensions[i]);
-        s_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
+        s_glRenderbufferStorage = (GLEXT::PFNGLRENDERBUFFERSTORAGEEXTPROC)
             ocpnGetProcAddress( "glRenderbufferStorage", extensions[i]);
-        s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)
+        s_glBindRenderbuffer = (GLEXT::PFNGLBINDRENDERBUFFEREXTPROC)
             ocpnGetProcAddress( "glBindRenderbuffer", extensions[i]);
-        s_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
+        s_glCheckFramebufferStatus = (GLEXT::PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
             ocpnGetProcAddress( "glCheckFramebufferStatus", extensions[i]);
-        s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
+        s_glDeleteFramebuffers = (GLEXT::PFNGLDELETEFRAMEBUFFERSEXTPROC)
             ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
-        s_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
+        s_glDeleteRenderbuffers = (GLEXT::PFNGLDELETERENDERBUFFERSEXTPROC)
             ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
-        s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
+        s_glGenerateMipmap = (GLEXT::PFNGLGENERATEMIPMAPEXTPROC)
             ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
             
         //VBO
-        s_glGenBuffers = (PFNGLGENBUFFERSPROC)
+        s_glGenBuffers = (GLEXT::PFNGLGENBUFFERSPROC)
             ocpnGetProcAddress( "glGenBuffers", extensions[i]);
-        s_glBindBuffer = (PFNGLBINDBUFFERPROC)
+        s_glBindBuffer = (GLEXT::PFNGLBINDBUFFERPROC)
             ocpnGetProcAddress( "glBindBuffer", extensions[i]);
-        s_glBufferData = (PFNGLBUFFERDATAPROC)
+        s_glBufferData = (GLEXT::PFNGLBUFFERDATAPROC)
             ocpnGetProcAddress( "glBufferData", extensions[i]);
-        s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
+        s_glDeleteBuffers = (GLEXT::PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
             
     }
@@ -771,27 +766,27 @@ static void GetglEntryPoints( void )
     //  Retry VBO entry points with all extensions
     if(0 == s_glGenBuffers){
         for( i=0; i<n_ext; i++) {
-            if((s_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress( "glGenBuffers", extensions[i])) )
+            if((s_glGenBuffers = (GLEXT::PFNGLGENBUFFERSPROC)ocpnGetProcAddress( "glGenBuffers", extensions[i])) )
                 break;
         }
         
         if( i < n_ext ){
-            s_glBindBuffer = (PFNGLBINDBUFFERPROC) ocpnGetProcAddress( "glBindBuffer", extensions[i]);
-            s_glBufferData = (PFNGLBUFFERDATAPROC) ocpnGetProcAddress( "glBufferData", extensions[i]);
-            s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+            s_glBindBuffer = (GLEXT::PFNGLBINDBUFFERPROC) ocpnGetProcAddress( "glBindBuffer", extensions[i]);
+            s_glBufferData = (GLEXT::PFNGLBUFFERDATAPROC) ocpnGetProcAddress( "glBufferData", extensions[i]);
+            s_glDeleteBuffers = (GLEXT::PFNGLDELETEBUFFERSPROC) ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
         }
     }
             
 
 #ifndef __OCPN__ANDROID__            
     for(i=0; i<n_ext; i++) {
-        if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
+        if((s_glCompressedTexImage2D = (GLEXT::PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
     }
 
     if(i<n_ext){
-        s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
+        s_glGetCompressedTexImage = (GLEXT::PFNGLGETCOMPRESSEDTEXIMAGEPROC)
             ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
     }
 #else    

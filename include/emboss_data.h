@@ -25,7 +25,7 @@
 #ifndef __EMBOSS_DATA_H__
 #define __EMBOSS_DATA_H__
 
-#include "dychart.h"
+#include "opengl.h"
 
 class emboss_data
 {

@@ -34,6 +34,10 @@
 #include "wx/tokenzr.h"
 #include <wx/textfile.h>
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#include "opengl.h"
+#endif
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
@@ -68,9 +72,6 @@
 #define new DEBUG_NEW
 #endif
 
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
 
 #include <algorithm>          // for std::sort
 
@@ -91,10 +92,10 @@ const char *MyCSVGetField( const char * pszFilename,
                          const char * pszTargetField ) ;
 
 #ifdef ocpnUSE_GL                         
-extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
-extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
-extern PFNGLBUFFERDATAPROC                 s_glBufferData;
-extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+extern GLEXT::PFNGLGENBUFFERSPROC                 s_glGenBuffers;
+extern GLEXT::PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+extern GLEXT::PFNGLBUFFERDATAPROC                 s_glBufferData;
+extern GLEXT::PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 #endif
 
 
