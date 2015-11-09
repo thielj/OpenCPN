@@ -79,6 +79,7 @@
 #define strncasecmp(x,y,z) _strnicmp(x,y,z)
 #endif
 
+#include "openglext.h"
 
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);      // found in s52cnsy
 

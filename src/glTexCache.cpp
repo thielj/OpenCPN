@@ -30,8 +30,8 @@
 
 #include <stdint.h>
 
-#include "glChartCanvas.h"
 #include "opengl.h"
+#include "glChartCanvas.h"
 #ifdef __WXMSW__ // because gl.h includes windows.h which defines symbols that conflict with wx
 #include <wx/msw/winundef.h>
 #endif
@@ -46,6 +46,8 @@
 #include "chartdb.h"
 #include "OCPNPlatform.h"
 #include "mipmap/mipmap.h"
+
+#include "openglext.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64

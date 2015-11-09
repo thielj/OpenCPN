@@ -25,7 +25,7 @@
 #ifndef __GLTEXTCACHE_H__
 #define __GLTEXTCACHE_H__
 
-#include <wx/glcanvas.h>
+#include "opengl.h"
 #include <wx/ffile.h>
 #include <wx/timer.h>
 #include <stdint.h>

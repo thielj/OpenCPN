@@ -12,16 +12,18 @@
     #if __OCPN__ANDROID__
         #include <QtGui/qopengl.h>
     #endif
+
     #define GL_GLEXT_LEGACY
+    #define GLX_GLXEXT_LEGACY
     #include <GL/gl.h>
-    #include <GL/glu.h>
-    namespace GLEXT {
-    #include <GL/glext.h>
-    }
-    #if __OCPN__ANDROID__
-        #include <EGL/egl.h>	// eglGetProcAddress
+    #ifndef __OCPN__ANDROID__
+        #include <GL/glx.h>
     #endif
+
+    #include <GL/glu.h>
 #endif
+
+#include <wx/glcanvas.h>
 
 #endif      // ocpnUSE_GL
 

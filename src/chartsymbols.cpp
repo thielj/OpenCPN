@@ -31,11 +31,8 @@
 
 #include <wx/filename.h>
 #include <stdlib.h>
-
+#include "opengl.h"
 #include "chartsymbols.h"
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
 
 extern bool g_bopengl;
 

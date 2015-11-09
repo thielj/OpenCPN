@@ -59,6 +59,7 @@
 #include <wx/image.h>
 #include <wx/tokenzr.h>
 
+#include "openglext.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC

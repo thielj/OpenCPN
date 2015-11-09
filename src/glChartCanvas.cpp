@@ -57,6 +57,7 @@ private:
 #include "androidUTIL.h"
 #endif
 
+#include "opengl.h"
 #include "glChartCanvas.h"
 #include "chcanv.h"
 #include "dychart.h"
@@ -82,6 +83,8 @@ private:
 #include "FontMgr.h"
 #include "mipmap/mipmap.h"
 #include "chartimg.h"
+
+#include "openglext.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -780,13 +783,13 @@ static void GetglEntryPoints( void )
 
 #ifndef __OCPN__ANDROID__            
     for(i=0; i<n_ext; i++) {
-        if((s_glCompressedTexImage2D = (GLEXT::PFNGLCOMPRESSEDTEXIMAGE2DPROC)
+        if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
     }
 
     if(i<n_ext){
-        s_glGetCompressedTexImage = (GLEXT::PFNGLGETCOMPRESSEDTEXIMAGEPROC)
+        s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
             ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
     }
 #else    

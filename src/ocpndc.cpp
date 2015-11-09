@@ -35,14 +35,10 @@
 #include <windows.h>
 #endif
 
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
+#include "opengl.h"
 
 #include <wx/graphics.h>
 #include <wx/dcclient.h>
-
-#include "opengl.h"
 
 #include <vector>
 

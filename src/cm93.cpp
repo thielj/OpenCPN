@@ -65,6 +65,8 @@
 #define new DEBUG_NEW
 #endif
 
+#include "openglext.h"
+
 extern ChartCanvas               *cc1;
 extern CM93OffsetDialog          *g_pCM93OffsetDialog;
 extern OCPNPlatform     *g_Platform;
