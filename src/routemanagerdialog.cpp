@@ -1600,8 +1600,11 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 mergeList.Add( track );
             }
 
+#if wxUSE_STD_CONTAINERS
             mergeList.Sort( (TrackArray::CMPFUNC) CompareTracks );
-
+#else
+            mergeList.Sort( (CMPFUNC_wxArrayTrackArray) CompareTracks );
+#endif
             targetTrack = (Track *) mergeList.Item( 0 );
             lastPoint = targetTrack->GetLastPoint();
 

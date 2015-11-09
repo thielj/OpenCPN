@@ -6629,9 +6629,11 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         // For lights we now have all the info gathered but no HTML output yet, now
         // run through the data and build a merged table for all lights.
 
-        //lights.Sort( ( CMPFUNC_wxArraywxArrayPtrVoid )( &s57chart::CompareLights ) );
+#if wxUSE_STD_CONTAINERS
         lights.Sort( (wxArrayPtrVoid::CMPFUNC) &s57chart::CompareLights );
-
+#else
+        lights.Sort( ( CMPFUNC_wxArraywxArrayPtrVoid )( &s57chart::CompareLights ) );
+#endif
         wxString lastPos;
 
         for( unsigned int curLightNo = 0; curLightNo < lights.Count(); curLightNo++ ) {
