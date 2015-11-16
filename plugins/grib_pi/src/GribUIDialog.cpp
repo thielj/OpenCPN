@@ -609,11 +609,11 @@ void GRIBUICtrlBar::OnAltitude( wxCommandEvent& event )
 
 void GRIBUICtrlBar::OnMove( wxMoveEvent& event )
 {
-    wxPoint p = event.GetPosition();
-    pPlugIn->SetCtrlBarXY ( p );
-
-    //event.Skip();
+    int w, h;
+    GetScreenPosition( &w, &h );
+    pPlugIn->SetCtrlBarXY ( wxPoint( w, h ) );
 }
+
 void GRIBUICtrlBar::OnMenuEvent( wxMenuEvent& event )
 {
     int id = event.GetId();
@@ -829,7 +829,7 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
         //need to set a position at start
         int w;
         ::wxDisplaySize( &w, NULL);
-        pReq_Dialog->Move( (w - pReq_Dialog->GetSize().GetX() ) / 3, 30 );
+        pReq_Dialog->Move( (w - pReq_Dialog->GetSize().GetX() ) / 2, 30 );
     } //end create new request dialog
 
     pReq_Dialog->Show( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == COMPLETE_SELECTION );
@@ -1517,6 +1517,7 @@ GRIBUICData::GRIBUICData( GRIBUICtrlBar &parent )
 
 void GRIBUICData::OnMove( wxMoveEvent& event )
 {
-    wxPoint p = event.GetPosition();
-    m_gpparent.pPlugIn->SetCursorDataXY ( p );
+    int w, h;
+    m_gCursorData->GetScreenPosition( &w, &h );
+    m_gpparent.pPlugIn->SetCursorDataXY ( wxPoint(w, h) );
 }

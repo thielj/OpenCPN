@@ -617,11 +617,10 @@ void GribSettingsDialog::SetSettingsDialogSize()
 		}
 		sc->SetMinSize( wxSize(wxMin( scr.x, w ), h) );
 #if defined __WXMSW__ || defined ( __WXOSX__ )
-		sc->Show( i == (unsigned int) m_SetBookpageIndex );
+        sc->Show( i == (unsigned int) m_SetBookpageIndex );
 #endif
-	}																					//end compute
+       } // end compute
 
-	m_nSettingsBook->SetSize( wt, -1);
 
 	Layout();
     Fit();
